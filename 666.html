@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>聚合工具箱 - 网页版</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;user-select:text!important}
+body{font-family:"Noto Sans SC",sans-serif;background:#0b0f1a;color:#e0e6f1;min-height:100vh}
+/* 雪花画布全屏 */
+#snow{
+  position:fixed;top:0;left:0;
+  width:100%;height:100%;
+  pointer-events:none;z-index:9999;
+}
+.container{max-width:900px;margin:0 auto;padding:30px 20px;position:relative;z-index:1}
+.logo{
+background:linear-gradient(135deg,#121a29,#1a2337);
+border-radius:20px;padding:24px;text-align:center;margin-bottom:24px;
+border:1px solid rgba(255,255,255,.08);
+opacity:0;transform:translateY(-30px);
+animation:fadeInDown 0.8s 0.1s ease forwards;
+}
+.logo pre{color:#a0bff9;font-size:10px;line-height:1.2}
+.card{
+background:rgba(20,28,46,.95);
+border-radius:18px;padding:24px;margin-bottom:16px;
+border:1px solid rgba(255,255,255,.06);
+opacity:0;transform:translateY(20px);
+animation:cardFade 0.7s 0.4s ease forwards;
+}
+.card h2{
+font-size:18px;color:#c7dfff;margin-bottom:16px;
+opacity:0;transform:translateX(-20px);
+animation:slideLeft 0.6s 0.6s ease forwards;
+}
+.btn{
+display:block;width:100%;padding:14px 18px;margin:8px 0;
+background:linear-gradient(90deg,#1b2538,#1e2a42);
+color:#e0ecff;border:none;border-radius:12px;
+cursor:pointer;transition:.25s ease;
+opacity:0;
+}
+.btn:nth-child(odd){transform:translateX(80px);animation:slideRight 0.5s ease forwards;}
+.btn:nth-child(even){transform:translateX(-80px);animation:slideLeft 0.5s ease forwards;}
+.btn:hover{background:linear-gradient(90deg,#24314d,#2a3a5c);padding-left:24px;color:#fff}
+.btn:disabled{opacity:0.5;cursor:not-allowed}
+.back{background:#182235!important;text-align:center}
+.output{
+background:#0f1624;padding:16px;border-radius:12px;margin-top:14px;
+min-height:80px;
+white-space:pre-wrap;
+word-wrap:break-word;
+overflow-wrap:break-word;
+color:#c7dfff;
+opacity: 0;
+transform: translateY(15px);
+transition: all 0.5s ease;
+height: auto;
+max-height:400px;
+overflow-y:auto;
+user-select:text!important;
+}
+.output.show{
+opacity: 1;
+transform: translateY(0);
+}
+.page{display:none}
+.page.active{display:block}
+textarea{
+width:100%;padding:12px;background:#121a29;
+border:1px solid rgba(255,255,255,.1);
+border-radius:10px;color:#e0ecff;margin:8px 0;font-size:14px;
+opacity:0;transform:translateY(10px);
+animation:fadeIn 0.5s 0.6s ease forwards;
+resize: none;
+white-space:pre-wrap;
+word-wrap:break-word;
+overflow-wrap:break-word;
+min-height:80px;
+height: auto;
+overflow: hidden;
+user-select:text!important;
+}
+input{
+width:100%;padding:12px;background:#121a29;
+border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#e0ecff;margin:8px 0;font-size:14px;
+opacity:0;transform:translateY(10px);animation:fadeIn 0.5s 0.6s ease forwards;
+user-select:text!important;
+}
+.copyright{
+text-align:center;color:#7a8ca3;font-size:13px;margin-top:30px;
+opacity:0;animation:fadeIn 1s 1.2s ease forwards;
+}
+.tip{color:#a0bff9;font-size:14px;margin:4px 0 8px 2px;opacity:0;animation:fadeIn 0.5s 0.6s ease forwards;}
+.warn-tip{color:#ff6b6b;font-size:13px;margin:4px 0 8px 2px;opacity:0;animation:fadeIn 0.5s 0.6s ease forwards;}
+.long-press-tip{color:#42e5ff!important;font-weight:bold}
+.contributor{
+text-align:left;color:#7a8ca3;font-size:12px;line-height:1.8;
+padding:16px;background:rgba(20,28,46,.6);
+border-radius:12px;margin-top:20px;
+opacity:0;animation:fadeIn 1s 1.3s ease forwards;
+white-space:pre-line;
+}
+.set-row{
+  display:flex;align-items:center;gap:10px;margin:6px 0;
+}
+.set-row label{
+  min-width:150px;font-size:13px;color:#c7dfff;
+}
+.set-row input,.set-row select{
+  flex:1;background:#121a29;color:#fff;border:1px solid #333;border-radius:8px;padding:8px;
+}
+.sep{
+  border:none;border-top:1px solid rgba(255,255,255,0.1);margin:10px 0;
+}
+.img-preview{
+  width:100%;height:auto;background:#121a29;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  margin:10px 0;border:1px solid rgba(255,255,255,.1);
+  overflow:hidden;padding:10px;
+}
+.img-preview img{
+  max-width:100%;max-height:60vh;object-fit:contain;
+  user-select:none;
+}
+/* 爬取模块状态样式 */
+.spider-tips{margin:8px 0;}
+.spider-loading{color:#42e5ff;font-size:14px;padding:8px 0;}
+.spider-success{color:#00B42A;font-size:14px;padding:8px 0;}
+.spider-error{color:#ff6b6b;font-size:14px;padding:8px 0;}
+.spider-stats{
+  display:flex;gap:15px;color:#a0bff9;font-size:12px;
+  padding:8px 0;
+}
+@keyframes fadeIn{to{opacity:1;transform:translateY(0);}}
+@keyframes fadeInDown{to{opacity:1;transform:translateY(0);}}
+@keyframes cardFade{to{opacity:1;transform:translateY(0);}}
+@keyframes slideLeft{to{opacity:1;transform:translateX(0);}}
+@keyframes slideRight{to{opacity:1;transform:translateX(0);}}
+</style>
+</head>
+<body>
+<!-- 雪花画布保留 -->
+<canvas id="snow"></canvas>
+
+<div class="container">
+<div class="logo">
+<pre>
+  ██████  ███████ ██████  
+ ██╔════  ██╔════ ██╔══██╗
+ ██║  ███ █████   ██████╔
+ ██║   ██║██╔══   ██╔══██╗
+ ⚔██████╔╝███████ ██║  ██║
+  ╚═════╝ ╚══════ ╚═╝  ╚═╝
+                聚 合 工 箱
+</pre>
+</div>
+
+<!-- 主页面 -->
+<div id="main" class="page active">
+<div class="card">
+<h2>📋 主功能菜单</h2>
+<button class="btn" onclick="go('yiyan')" style="animation-delay:0.7s">✨ 随机一言</button>
+<button class="btn" onclick="go('text')" style="animation-delay:0.75s">🔐 文本加密/解密</button>
+<button class="btn" onclick="go('file')" style="animation-delay:0.8s">📄 文件加密/解密 </button>
+<button class="btn" onclick="go('imgmix')" style="animation-delay:0.85s">🖼️ 小番茄图片混淆</button>
+<button class="btn" onclick="go('spider')" style="animation-delay:0.88s">🌐 网页源码爬取</button>
+<button class="btn" onclick="go('device')" style="animation-delay:0.9s">📱 设备信息</button>
+<button class="btn" onclick="go('qq')" style="animation-delay:0.95s">👥 QQ加群</button>
+<button class="btn" onclick="go('random')" style="animation-delay:1.0s">🎲 随机数</button>
+<button class="btn" onclick="go('log')" style="animation-delay:1.05s">📋 更新日志</button>
+<button class="btn" onclick="go('setting')" style="animation-delay:1.1s">⚙️ 个性化设置</button>
+</div>
+</div>
+
+<!-- 🌐 完整替换：网页源码爬取（新增保存HTML） -->
+<div id="spider" class="page">
+<div class="card">
+<h2>🌐 网页源码爬取</h2>
+<p class="tip">输入网页链接，一键获取源码、多代理兼容、自动跨域</p>
+<p class="warn-tip">⚠️ 部分防盗链/加密网站无法获取，属正常现象</p>
+<input type="url" id="spider_url" placeholder="请输入网页地址（https://开头）" style="animation-delay:0.5s">
+<button class="btn" id="spider_get" style="animation-delay:0.6s;background:#2D5BFF;">🚀 获取网页源码</button>
+<button class="btn" id="spider_save" style="animation-delay:0.7s;background:#00B42A;">💾 保存为TXT文件</button>
+<!-- 新增：保存为HTML文件按钮 -->
+<button class="btn" id="spider_save_html" style="animation-delay:0.75s;background:#00B49A;">💾 保存为HTML文件</button>
+<div id="spider_tips" class="spider-tips"></div>
+<div id="spider_stats" class="spider-stats" style="display:none;"></div>
+<div class="output" id="spider_out" style="animation-delay:0.9s">网页源码将显示在这里</div>
+<button class="btn back" onclick="go('main')" style="animation-delay:1.0s">← 返回主菜单</button>
+</div>
+</div>
+
+<!-- 🖼️ 无卡顿小番茄图片混淆 -->
+<div id="imgmix" class="page">
+<div class="card">
+<h2>🖼️ 小番茄原版图片混淆</h2>
+<p class="tip">✅ 基于空间填充Gilbert曲线算法｜压缩不失效</p>
+<p class="warn-tip">⚠️ 流程：选择图片 → 混淆 → 解混淆 → 还原原图</p>
+<p class="tip long-press-tip">👉 长按图片，使用浏览器自带菜单手动保存图片</p>
+<input type="file" id="ipt" accept="image/*" style="display:none;">
+<label for="ipt" class="btn" style="animation-delay:0.5s; background:#180161;">📁 选择图片</label>
+<div class="img-preview" id="preview_box"><span>选择图片后预览</span></div>
+<button class="btn" id="enc" style="animation-delay:0.7s; background:#4f1787;">🔀 混淆</button>
+<button class="btn" id="dec" style="animation-delay:0.75s; background:#eb3678;">🔁 解混淆</button>
+<button class="btn" id="re" style="animation-delay:0.8s; background:#fb773c;">🔄 还原原图</button>
+<button class="btn back" onclick="go('main')" style="animation-delay:0.9s">← 返回主菜单</button>
+</div>
+</div>
+
+<!-- ✨ 随机一言 -->
+<div id="yiyan" class="page">
+<div class="card">
+<h2>✨ 随机一言</h2>
+<div class="output" id="yitext">点击获取...</div>
+<button class="btn" onclick="getYi()" style="animation-delay:0.7s">刷新一言</button>
+<button class="btn" onclick="copyText('yitext')" style="animation-delay:0.75s">📋 复制一言</button>
+<button class="btn back" onclick="go('main')" style="animation-delay:0.8s">← 返回</button>
+</div>
+</div>
+
+<!-- 🔐 文本加密/解密 -->
+<div id="text" class="page">
+<div class="card">
+<h2>🔐 文本加密/解密（1字扩18字符）</h2>
+<textarea id="text_input" rows="3" placeholder="输入内容"></textarea>
+<button class="btn" onclick="do_enc()" style="animation-delay:0.7s">🔒 超长加密</button>
+<button class="btn" onclick="pasteText()" style="animation-delay:0.72s">📋 粘贴到输入框</button>
+<button class="btn" onclick="do_dec()" style="animation-delay:0.8s">🔓 解密还原</button>
+<button class="btn" onclick="copyText('text_out')" style="animation-delay:0.85s">📋 复制结果</button>
+<div class="output" id="text_out"></div>
+<button class="btn back" onclick="go('main')" style="animation-delay:0.9s">← 返回</button>
+</div>
+</div>
+
+<!-- 📄 文件加密/解密 -->
+<div id="file" class="page">
+<div class="card">
+<h2>📄 文件加密/解密</h2>
+<input type="file" id="file_input" multiple>
+<button class="btn" onclick="file_enc()" style="animation-delay:0.7s">🔒 加密文件</button>
+<button class="btn" onclick="file_dec()" style="animation-delay:0.8s">🔓 解密文件</button>
+<button class="btn back" onclick="go('main')" style="animation-delay:0.9s">← 返回</button>
+</div>
+</div>
+
+<!-- 📱 设备信息 -->
+<div id="device" class="page">
+<div class="card">
+<h2>📱 设备信息</h2>
+<div class="output" id="devinfo"></div>
+<button class="btn" onclick="show_device()" style="animation-delay:0.7s">刷新</button>
+<button class="btn" onclick="copyText('devinfo')" style="animation-delay:0.75s">📋 复制设备信息</button>
+<button class="btn back" onclick="go('main')" style="animation-delay:0.8s">← 返回</button>
+</div>
+</div>
+
+<!-- 👥 QQ加群 -->
+<div id="qq" class="page">
+<div class="card">
+<h2>👥 QQ一键加群</h2>
+<div class="output show" id="qq_out">
+【大群】QQ号：1077689022
+🔐 加群验证答案：云舒轩崽爱吃糖
+请复制答案后提交申请！
+【小群】QQ号：931374428
+✅ 无需验证，直接加入
+⚠️ 若群聊提示被封禁或已解散，请添加管理员QQ：
+① 342004241
+② 551422014
+</div>
+<button class="btn" onclick="window.open('mqqapi://card/show_pslcard?src_type=internal&version=1&uin=1077689022&card_type=group&source=qrcode')" style="animation-delay:0.7s">➕ 加入大群（需验证）</button>
+<button class="btn" onclick="copyAns()" style="animation-delay:0.75s">📋 复制答案：云舒轩崽爱吃糖</button>
+<button class="btn" onclick="window.open('mqqapi://card/show_pslcard?src_type=internal&version=1&uin=931374428&card_type=group&source=qrcode')" style="animation-delay:0.8s">➕ 加入小群（免验证）</button>
+<button class="btn back" onclick="go('main')" style="animation-delay:0.9s">← 返回主菜单</button>
+</div>
+</div>
+
+<!-- 🎲 随机数 -->
+<div id="random" class="page">
+<div class="card">
+<h2>🎲 随机数生成器</h2>
+<div class="tip">👉 最小值：随机数从几开始</div>
+<input type="number" id="nmin" value="1" placeholder="请输入最小值">
+<div class="tip">👉 最大值：随机数到几结束</div>
+<input type="number" id="nmax" value="100" placeholder="请输入最大值">
+<div class="tip">👉 生成个数：要生成多少个数字</div>
+<input type="number" id="ncount" value="10" placeholder="请输入生成个数">
+<button class="btn" onclick="make_rand()" style="animation-delay:0.8s">🎯 立即生成随机数</button>
+<button class="btn" onclick="copyText('rand_out')" style="animation-delay:0.85s">📋 复制随机数</button>
+<div class="output" id="rand_out"></div>
+<button class="btn back" onclick="go('main')" style="animation-delay:1.0s">← 返回</button>
+</div>
+</div>
+
+<!-- 📋 更新日志 -->
+<div id="log" class="page">
+<div class="card">
+<h2>📋 更新日志</h2>
+<select id="logSelect" style="width:100%;padding:12px;border-radius:10px;background:#121a29;color:#c7dfff;border:1px solid rgba(255,255,255,.1);font-size:14px;margin-bottom:10px;">
+<option value="">请选择更新时间</option>
+<option value="2026-04-25 20:00:00">2026-04-25 20:00:00</option>
+</select>
+<div class="output show" id="log_out"></div>
+<button class="btn" onclick="backupNotice()" style="animation-delay:0.7s;background:#28a745;">💾 备份公告源码</button>
+<button class="btn back" onclick="go('main')" style="animation-delay:0.8s">← 返回</button>
+</div>
+</div>
+
+<!-- ⚙️ 个性化设置 -->
+<div id="setting" class="page">
+<div class="card">
+<h2>⚙️ 个性化设置</h2>
+<div class="set-row"><label>背景颜色</label><input type="color" id="bg_color" value="#0b0f1a"></div>
+<div class="set-row"><label>全局字体大小</label><input type="range" min="10" max="20" value="14" id="font_size"></div>
+<div class="set-row"><label>卡片圆角</label><input type="range" min="10" max="40" value="18" id="card_radius"></div>
+<div class="set-row"><label>卡片透明度</label><input type="range" min="0.5" max="1" step="0.01" value="0.95" id="card_op"></div>
+<div class="set-row"><label>按钮圆角</label><input type="range" min="6" max="30" value="12" id="btn_radius"></div>
+<hr class="sep">
+<div class="set-row"><label>雪花数量</label><input type="range" min="30" max="500" value="150" id="snow_count"></div>
+<div class="set-row"><label>飘落速度</label><input type="range" min="0.5" max="5" step="0.1" value="1" id="snow_speed"></div>
+<div class="set-row"><label>最小大小</label><input type="range" min="1" max="8" value="1" id="snow_min"></div>
+<div class="set-row"><label>最大大小</label><input type="range" min="2" max="20" value="3" id="snow_max"></div>
+<div class="set-row"><label>雪花颜色</label><input type="color" id="snow_color" value="#ffffff"></div>
+<div class="set-row"><label>最小透明度</label><input type="range" min="0.1" max="1" step="0.01" value="0.5" id="snow_o1"></div>
+<div class="set-row"><label>最大透明度</label><input type="range" min="0.2" max="1" step="0.01" value="1" id="snow_o2"></div>
+<div class="set-row"><label>横向摆动</label><input type="range" min="0" max="3" step="0.1" value="0.5" id="snow_wind"></div>
+<div class="set-row"><label>雪花旋转</label><select id="snow_rotate"><option value="1">开启</option><option value="0">关闭</option></select></div>
+<div class="set-row"><label>旋转速度</label><input type="range" min="0.01" max="0.5" step="0.01" value="0.1" id="rotate_speed"></div>
+<hr class="sep">
+<div class="set-row"><label>按钮左色</label><input type="color" id="btn_c1" value="#1b2538"></div>
+<div class="set-row"><label>按钮右色</label><input type="color" id="btn_c2" value="#1e2a42"></div>
+<div class="set-row"><label>按钮hover色</label><input type="color" id="btn_h" value="#24314d"></div>
+<div class="set-row"><label>按钮文字色</label><input type="color" id="btn_text" value="#e0ecff"></div>
+<div class="set-row"><label>按钮动画时长</label><input type="range" min="0.3" max="2" step="0.05" value="0.5" id="btn_time"></div>
+<hr class="sep">
+<div class="set-row"><label>输出框背景</label><input type="color" id="out_bg" value="#0f1624"></div>
+<div class="set-row"><label>输出文字色</label><input type="color" id="out_text" value="#c7dfff"></div>
+<div class="set-row"><label>输出框圆角</label><input type="range" min="6" max="30" value="12" id="out_radius"></div>
+<div class="set-row"><label>输出动画时长</label><input type="range" min="0.3" max="2" step="0.1" value="0.5" id="out_time"></div>
+<hr class="sep">
+<div class="set-row"><label>输入框背景</label><input type="color" id="in_bg" value="#121a29"></div>
+<div class="set-row"><label>输入文字色</label><input type="color" id="in_text" value="#e0ecff"></div>
+<div class="set-row"><label>输入框圆角</label><input type="range" min="6" max="30" value="10" id="in_radius"></div>
+<hr class="sep">
+<div class="set-row"><label>LOGO圆角</label><input type="range" min="10" max="40" value="20" id="logo_r"></div>
+<div class="set-row"><label>LOGO左色</label><input type="color" id="logo_c1" value="#121a29"></div>
+<div class="set-row"><label>LOGO右色</label><input type="color" id="logo_c2" value="#1a2337"></div>
+<div class="set-row"><label>LOGO文字色</label><input type="color" id="logo_text" value="#a0bff9"></div>
+<button class="btn back" onclick="go('main')" style="margin-top:20px">← 返回主菜单</button>
+</div>
+</div>
+
+<div class="contributor">
+📌 开发者名单：
+1. (主)糖霜(342004241)：提供了界面UI设计
+2. (副)长夜路漫漫(551422014)：提供了网页直链接
+3. (副)yoki(3916038020)：提供了代码支持
+</div>
+<div class="copyright">聚合工具箱 © 2026 高级网页版</div>
+</div>
+
+<script>
+// ==================== 小番茄Gilbert曲线算法 ====================
+function gilbert2d(width, height) {
+    const coordinates = [];
+    if (width >= height) {
+        generate2d(0, 0, width, 0, 0, height, coordinates);
+    } else {
+        generate2d(0, 0, 0, height, width, 0, coordinates);
+    }
+    return coordinates;
+}
+function generate2d(x, y, ax, ay, bx, by, coordinates) {
+    const w = Math.abs(ax + ay);
+    const h = Math.abs(bx + by);
+    const dax = Math.sign(ax), day = Math.sign(ay);
+    const dbx = Math.sign(bx), dby = Math.sign(by);
+    if (h === 1) {
+        for (let i = 0; i < w; i++) {
+            coordinates.push([x, y]);
+            x += dax;
+            y += day;
+        }
+        return;
+    }
+    if (w === 1) {
+        for (let i = 0; i < h; i++) {
+            coordinates.push([x, y]);
+            x += dbx;
+            y += dby;
+        }
+        return;
+    }
+    let ax2 = Math.floor(ax / 2), ay2 = Math.floor(ay / 2);
+    let bx2 = Math.floor(bx / 2), by2 = Math.floor(by / 2);
+    const w2 = Math.abs(ax2 + ay2);
+    const h2 = Math.abs(bx2 + by2);
+    if (2 * w > 3 * h) {
+        if ((w2 % 2) && (w > 2)) {
+            ax2 += dax;
+            ay2 += day;
+        }
+        generate2d(x, y, ax2, ay2, bx, by, coordinates);
+        generate2d(x + ax2, y + ay2, ax - ax2, ay - ay2, bx, by, coordinates);
+    } else {
+        if ((h2 % 2) && (h > 2)) {
+            bx2 += dbx;
+            by2 += dby;
+        }
+        generate2d(x, y, bx2, by2, ax2, ay2, coordinates);
+        generate2d(x + bx2, y + by2, ax, ay, bx - bx2, by - by2, coordinates);
+        generate2d(x + (ax - dax) + (bx2 - dbx), y + (ay - day) + (by2 - dby),
+            -bx2, -by2, -(ax - ax2), -(ay - ay2), coordinates);
+    }
+}
+
+// 页面切换
+function go(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+const KEY = "TangShuang_Secret_Key_2026";
+function setOutput(elId, text) {
+  const el = document.getElementById(elId);
+  el.classList.remove('show');
+  setTimeout(() => { el.innerText = text; el.classList.add('show'); }, 50);
+}
+
+// 输入框自适应
+const textarea = document.getElementById('text_input');
+if (textarea) {
+  textarea.addEventListener('input', function () {
+    this.style.height = 'auto';
+    this.style.height = this.scrollHeight + 'px';
+  });
+}
+
+// 超长加密
+const EXPAND_LEN = 18;
+const CHAR_POOL = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+function getRandomStr(len){
+  let s="";
+  for(let i=0;i<len;i++){
+    s+=CHAR_POOL[Math.floor(Math.random()*CHAR_POOL.length)];
+  }
+  return s;
+}
+function do_enc(){
+  const t=document.getElementById("text_input").value.trim();
+  if(!t)return;
+  let out="";
+  for(let c of t){
+    let code=c.charCodeAt(0).toString(16).padStart(4,"0");
+    out+=code+getRandomStr(EXPAND_LEN)+"|";
+  }
+  setOutput("text_out",out);
+}
+function do_dec(){
+  const t=document.getElementById("text_input").value.trim();
+  if(!t)return;
+  let arr=t.split("|").filter(x=>x);
+  let out="";
+  for(let item of arr){
+    let code=item.substr(0,4);
+    let c=parseInt(code,16);
+    if(c)out+=String.fromCharCode(c);
+  }
+  setOutput("text_out",out);
+}
+
+// 文件加解密
+function file_enc() {
+  const files = document.getElementById("file_input").files;
+  if (!files.length) return;
+  for (let f of files) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const buf = new Uint8Array(e.target.result);
+      const out = new Uint8Array(buf.length);
+      for (let i = 0; i < buf.length; i++) out[i] = buf[i] ^ KEY.charCodeAt(i % KEY.length);
+      const blob = new Blob([out], { type: "application/octet-stream" });
+      const a = document.createElement("a");
+      a.download = f.name + ".enc";
+      a.href = URL.createObjectURL(blob);
+      a.click();
+      URL.revokeObjectURL(a.href);
+    };
+    reader.readAsArrayBuffer(f);
+  }
+}
+function file_dec() {
+  const files = document.getElementById("file_input").files;
+  if (!files.length) return;
+  for (let f of files) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const buf = new Uint8Array(e.target.result);
+      const out = new Uint8Array(buf.length);
+      for (let i = 0; i < buf.length; i++) out[i] = buf[i] ^ KEY.charCodeAt(i % KEY.length);
+      const name = f.name.replace(/\.enc$/i, "");
+      const blob = new Blob([out], { type: "application/octet-stream" });
+      const a = document.createElement("a");
+      a.download = name;
+      a.href = URL.createObjectURL(blob);
+      a.click();
+      URL.revokeObjectURL(a.href);
+    };
+    reader.readAsArrayBuffer(f);
+  }
+}
+
+// 随机一言
+async function getYi() {
+  setOutput('yitext', "加载中...");
+  try {
+    const r = await fetch("https://v2.xxapi.cn/api/yiyan?type=hitokoto");
+    const d = await r.json();
+    if (d.code === 200) setOutput('yitext', d.data);
+  } catch (e) {}
+}
+
+// 设备信息
+function show_device() {
+  setOutput('devinfo', `系统：${navigator.platform}\n浏览器：${navigator.userAgent}\n语言：${navigator.language}\n分辨率：${screen.width}×${screen.height}`);
+}
+
+// 随机数
+function make_rand() {
+  const min = parseInt(document.getElementById("nmin").value) || 1;
+  const max = parseInt(document.getElementById("nmax").value) || 100;
+  const cnt = parseInt(document.getElementById("ncount").value) || 10;
+  if (min > max) return;
+  let arr = [];
+  for (let i = 0; i < cnt; i++) arr.push(Math.floor(Math.random() * (max - min + 1)) + min);
+  setOutput('rand_out', arr.join(" "));
+}
+
+// 复制（无成功弹窗）
+async function copyText(id) {
+  const el = document.getElementById(id);
+  if (!el) {
+    alert("复制失败：未找到目标元素");
+    return;
+  }
+  const text = el.innerText.trim();
+  if (!text) {
+    alert("复制失败：内容为空");
+    return;
+  }
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+    }
+  } catch (err) {
+    alert("复制失败：" + err.message);
+  }
+}
+
+// 粘贴（自定义提示）
+async function pasteText() {
+  const textInput = document.getElementById("text_input");
+  if (!textInput) {
+    alert("粘贴失败，请手动粘贴");
+    return;
+  }
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      let pasteText = await navigator.clipboard.readText();
+      textInput.value = pasteText;
+      textInput.dispatchEvent(new Event("input"));
+    } else {
+      throw new Error("环境不支持");
+    }
+  } catch (err) {
+    alert(`粘贴失败，请手动粘贴
+可能原因：
+1. 本地以file://协议打开，浏览器禁止读取剪贴板
+2. 未授予浏览器剪贴板读取权限
+3. 浏览器隐私模式/扩展插件限制功能
+4. 仅HTTPS/localhost环境支持自动粘贴
+5. 浏览器版本过低，不支持相关API`);
+  }
+}
+
+// QQ答案复制
+function copyAns() {
+  const text = "云舒轩崽爱吃糖";
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text);
+    } else {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+    }
+  } catch (err) {
+    alert("复制失败：" + err.message);
+  }
+}
+
+// 更新日志
+const logData = {
+"2026-04-25 20:00:00":"【新增】集成网页源码爬取工具，支持URL解析、HTML分析、保存为【网页地址.txt】",
+};
+document.getElementById('logSelect').addEventListener('change', function () {
+  document.getElementById('log_out').innerText = logData[this.value] || "请选择更新时间查看详情";
+});
+
+// ==================== 雪花动画（完整保留） ====================
+const cv = document.getElementById("snow");
+const ctx = cv.getContext("2d");
+let w, h;
+let flakes = [];
+let lastTime = 0;
+const targetFPS = 90;
+const frameInterval = 1000 / targetFPS;
+function resize() { w = window.innerWidth; h = window.innerHeight; cv.width = w; cv.height = h; }
+window.addEventListener("resize", resize);
+resize();
+function drawSnow(x, y, size, color, op, angle) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+  ctx.globalAlpha = op;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = size * 0.25;
+  for (let i = 0; i < 6; i++) {
+    ctx.rotate(Math.PI / 3);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, -size);
+    ctx.lineTo(size * 0.2, -size * 0.7);
+    ctx.moveTo(0, -size);
+    ctx.lineTo(-size * 0.2, -size * 0.7);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+function initSnow() {
+  flakes = [];
+  let count = parseInt(document.getElementById('snow_count').value);
+  for (let i = 0; i < count; i++) {
+    flakes.push({
+      x: Math.random() * w,
+      y: Math.random() * -h,
+      s: Math.random() * (document.getElementById('snow_max').value - document.getElementById('snow_min').value) + document.getElementById('snow_min').value,
+      vy: Math.random() * 1.5 * document.getElementById('snow_speed').value + 0.2,
+      vx: (Math.random() - 0.5) * document.getElementById('snow_wind').value,
+      op: Math.random() * (document.getElementById('snow_o2').value - document.getElementById('snow_o1').value) + document.getElementById('snow_o1').value,
+      angle: 0
+    });
+  }
+}
+function applySetting() {
+  document.body.style.background = document.getElementById('bg_color').value;
+  document.body.style.fontSize = document.getElementById('font_size').value + 'px';
+  document.querySelectorAll('.card').forEach(c => {
+    c.style.borderRadius = document.getElementById('card_radius').value + 'px';
+    c.style.background = `rgba(20,28,46,${document.getElementById('card_op').value})`;
+  });
+  document.querySelectorAll('.btn').forEach(b => {
+    b.style.borderRadius = document.getElementById('btn_radius').value + 'px';
+    b.style.background = `linear-gradient(90deg,${document.getElementById('btn_c1').value},${document.getElementById('btn_c2').value})`;
+    b.style.color = document.getElementById('btn_text').value;
+  });
+  document.querySelectorAll('.output').forEach(o => {
+    o.style.background = document.getElementById('out_bg').value;
+    o.style.color = document.getElementById('out_text').value;
+    o.style.borderRadius = document.getElementById('out_radius').value + 'px';
+  });
+  document.querySelectorAll('textarea,input').forEach(i => {
+    i.style.background = document.getElementById('in_bg').value;
+    i.style.color = document.getElementById('in_text').value;
+    i.style.borderRadius = document.getElementById('in_radius').value + 'px';
+  });
+  let logo = document.querySelector('.logo');
+  logo.style.borderRadius = document.getElementById('logo_r').value + 'px';
+  logo.style.background = `linear-gradient(135deg,${document.getElementById('logo_c1').value},${document.getElementById('logo_c2').value})`;
+  document.querySelector('.logo pre').style.color = document.getElementById('logo_text').value;
+  initSnow();
+}
+document.querySelectorAll('#setting input').forEach(i => {
+  i.addEventListener('input', applySetting);
+});
+function renderLoop(timestamp) {
+  const delta = timestamp - lastTime;
+  if (delta >= frameInterval) {
+    lastTime = timestamp - (delta % frameInterval);
+    ctx.clearRect(0, 0, w, h);
+    let color = document.getElementById('snow_color').value;
+    let rotOn = document.getElementById('snow_rotate').value == 1;
+    let rotSp = parseFloat(document.getElementById('rotate_speed').value);
+    flakes.forEach(s => {
+      s.y += s.vy;
+      s.x += s.vx;
+      if (s.y > h) { s.y = -10; s.x = Math.random() * w; }
+      if (rotOn) s.angle += rotSp;
+      drawSnow(s.x, s.y, s.s, color, s.op, s.angle);
+    });
+  }
+  requestAnimationFrame(renderLoop);
+}
+initSnow();
+requestAnimationFrame(renderLoop);
+applySetting();
+
+// ==================== 纯净版图片混淆 ====================
+const img_preview = document.getElementById("preview_box");
+let originFile = null;
+const displayImg = new Image();
+function setsrc(src){
+    if(window.currentUrl) URL.revokeObjectURL(window.currentUrl);
+    window.currentUrl = src;
+    displayImg.src = src;
+    img_preview.innerHTML = `<img src="${src}" style="max-width:100%;max-height:100%;">`;
+}
+function encrypt(img){
+    const cvs = document.createElement("canvas")
+    const width = cvs.width = img.width
+    const height = cvs.height = img.height
+    const ctx = cvs.getContext("2d")
+    ctx.drawImage(img, 0, 0)
+    const imgdata = ctx.getImageData(0, 0, width, height)
+    const imgdata2 = new ImageData(width, height)
+    const curve = gilbert2d(width, height)
+    const offset = Math.round((Math.sqrt(5) - 1) / 2 * width * height)
+    for(let i = 0; i < width * height; i++){
+        const old_pos = curve[i]
+        const new_pos = curve[(i + offset) % (width * height)]
+        const old_p = 4 * (old_pos[0] + old_pos[1] * width)
+        const new_p = 4 * (new_pos[0] + new_pos[1] * width)
+        imgdata2.data.set(imgdata.data.slice(old_p, old_p + 4), new_p)
+    }
+    ctx.putImageData(imgdata2, 0, 0)
+    cvs.toBlob(b => { setsrc(URL.createObjectURL(b)) }, "image/jpeg", 0.95)
+}
+function decrypt(img){
+    const cvs = document.createElement("canvas")
+    const width = cvs.width = img.width
+    const height = cvs.height = img.height
+    const ctx = cvs.getContext("2d")
+    ctx.drawImage(img, 0, 0)
+    const imgdata = ctx.getImageData(0, 0, width, height)
+    const imgdata2 = new ImageData(width, height)
+    const curve = gilbert2d(width, height)
+    const offset = Math.round((Math.sqrt(5) - 1) / 2 * width * height)
+    for(let i = 0; i < width * height; i++){
+        const old_pos = curve[i]
+        const new_pos = curve[(i + offset) % (width * height)]
+        const old_p = 4 * (old_pos[0] + old_pos[1] * width)
+        const new_p = 4 * (new_pos[0] + new_pos[1] * width)
+        imgdata2.data.set(imgdata.data.slice(new_p, new_p + 4), old_p)
+    }
+    ctx.putImageData(imgdata2, 0, 0)
+    cvs.toBlob(b => { setsrc(URL.createObjectURL(b)) }, "image/jpeg", 0.95)
+}
+const ipt = document.getElementById("ipt");
+const encBtn = document.getElementById("enc");
+const decBtn = document.getElementById("dec");
+const resetBtn = document.getElementById("re");
+ipt.onchange = () => {
+    if(ipt.files.length > 0){
+        originFile = ipt.files[0];
+        setsrc(URL.createObjectURL(originFile))
+    }
+}
+encBtn.onclick = () => { 
+    if(displayImg.src) {
+        img_preview.innerHTML = "处理中...";
+        setTimeout(()=>encrypt(displayImg), 50);
+    }
+}
+decBtn.onclick = () => { 
+    if(displayImg.src) {
+        img_preview.innerHTML = "处理中...";
+        setTimeout(()=>decrypt(displayImg), 50);
+    }
+}
+resetBtn.onclick = () => { 
+    if(originFile) setsrc(URL.createObjectURL(originFile)) 
+}
+
+// ==================== 完整网页爬取（新增保存HTML） ====================
+let spider_html = "";
+let spider_url_val = "";
+const spider_get = document.getElementById("spider_get");
+const spider_save = document.getElementById("spider_save");
+const spider_save_html = document.getElementById("spider_save_html");
+const spider_url = document.getElementById("spider_url");
+const spider_out = document.getElementById("spider_out");
+const spider_tips = document.getElementById("spider_tips");
+const spider_stats = document.getElementById("spider_stats");
+
+// 超时请求
+function fetchTimeout(url, options, timeout = 15000) {
+    return Promise.race([
+        fetch(url, options),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("请求超时")), timeout))
+    ]);
+}
+
+// 多代理获取
+async function getPageSource(url) {
+    const proxies = [
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+        `https://corsproxy.io/?${encodeURIComponent(url)}`,
+        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+    ];
+    for (let proxy of proxies) {
+        try {
+            let res = await fetchTimeout(proxy, {}, 12000);
+            if (res.ok) return await res.text();
+        } catch (e) {}
+    }
+    throw new Error("所有代理均失效，无法获取源码");
+}
+
+// 验证URL
+function checkUrl(str) {
+    try { new URL(str); return true; } catch { return false; }
+}
+
+// 获取源码
+spider_get.onclick = async () => {
+    const url = spider_url.value.trim();
+    if (!url || !checkUrl(url)) {
+        spider_tips.innerHTML = `<div class="spider-error">请输入有效的HTTPS网址</div>`;
+        return;
+    }
+    spider_url_val = url;
+    spider_tips.innerHTML = `<div class="spider-loading">正在获取源码，请稍候...</div>`;
+    spider_stats.style.display = "none";
+    setOutput("spider_out", "加载中...");
+    const start = Date.now();
+    try {
+        spider_html = await getPageSource(url);
+        const useTime = Date.now() - start;
+        const len = spider_html.length;
+        const lines = spider_html.split("\n").length;
+        spider_stats.style.display = "flex";
+        spider_stats.innerHTML = `字符数：${len}｜行数：${lines}｜耗时：${useTime}ms`;
+        spider_tips.innerHTML = `<div class="spider-success">获取成功！</div>`;
+        setOutput("spider_out", len > 6000 ? spider_html.slice(0,6000)+"...(已截断)" : spider_html);
+    } catch (e) {
+        spider_tips.innerHTML = `<div class="spider-error">获取失败：${e.message}</div>`;
+        setOutput("spider_out", "获取失败");
+    }
+};
+
+// 保存为TXT
+spider_save.onclick = () => {
+    if (!spider_html) {
+        spider_tips.innerHTML = `<div class="spider-error">暂无源码可保存</div>`;
+        return;
+    }
+    let host = "web_source";
+    try { host = new URL(spider_url_val).hostname; } catch {}
+    const blob = new Blob([spider_html], { type: "text/plain;charset=utf-8" });
+    const a = document.createElement("a");
+    a.download = `${host}.txt`;
+    a.href = URL.createObjectURL(blob);
+    a.click();
+    URL.revokeObjectURL(a.href);
+    spider_tips.innerHTML = `<div class="spider-success">TXT文件保存成功！</div>`;
+};
+
+// 新增：保存为HTML（文件名：域名.html）
+spider_save_html.onclick = () => {
+    if (!spider_html) {
+        spider_tips.innerHTML = `<div class="spider-error">暂无源码可保存</div>`;
+        return;
+    }
+    let host = "web_source";
+    try { host = new URL(spider_url_val).hostname; } catch {}
+    // 保存为HTML文件，类型为text/html
+    const blob = new Blob([spider_html], { type: "text/html;charset=utf-8" });
+    const a = document.createElement("a");
+    a.download = `${host}.html`;
+    a.href = URL.createObjectURL(blob);
+    a.click();
+    URL.revokeObjectURL(a.href);
+    spider_tips.innerHTML = `<div class="spider-success">HTML文件保存成功！</div>`;
+};
+
+// 备份公告
+function backupNotice() {
+  const code = `const logData = {"2026-04-25 20:00:00":"【新增】集成网页源码爬取工具，支持URL解析、HTML分析、保存为【网页地址.txt】"};`;
+  const blob = new Blob([code], { type: "text/plain;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "更新公告.txt";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+</script>
+</body>
+</html>
