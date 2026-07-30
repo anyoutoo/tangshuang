@@ -214,4 +214,1584 @@ white-space:pre-line;
  ██╔════  ██╔════ ██╔══██╗
  ██║  ███ █████   ██████╔
  ██║   ██║██╔══   ██╔══██╗
- ╔█████
+ ╔██████╔╝███████ ██║  ██║
+  ╚═════╝ ╚══════ ╚═╝  ╚═╝
+                聚 合 工 箱
+</pre>
+</div>
+<!-- 主菜单 -->
+<div id="main" class="page active">
+<div class="card">
+<h2>📋 主功能菜单</h2>
+<button class="btn" onclick="go('yiyan')" style="animation-delay:0.7s">✨ 随机一言</button>
+<button class="btn" onclick="go('text')" style="animation-delay:0.75s">🔐 文本加密/解密</button>
+<button class="btn" onclick="go('file')" style="animation-delay:0.8s">📄 文件加密/解密</button>
+<button class="btn" onclick="go('imgmix')" style="animation-delay:0.85s">🖼️ 小番茄图片混淆</button>
+<button class="btn" onclick="go('spider')" style="animation-delay:0.88s">🌐 网页源码爬取</button>
+<button class="btn" onclick="go('device')" style="animation-delay:0.9s">📱 设备信息</button>
+<button class="btn" onclick="go('qq')" style="animation-delay:0.95s">👥 QQ加群</button>
+<button class="btn" onclick="go('random')" style="animation-delay:1.0s">🎲 随机数</button>
+<button class="btn" onclick="go('video')" style="animation-delay:1.05s">🎬 视频解析下载</button>
+<button class="btn" onclick="go('anime')" style="animation-delay:1.06s">🎨 二次元壁纸获取</button>
+<button class="btn" onclick="go('noticeTool')" style="animation-delay:1.08s">📝 公告生成工具</button>
+<button class="btn" onclick="go('log')" style="animation-delay:1.1s">📋 更新日志</button>
+<button class="btn" onclick="go('setting')" style="animation-delay:1.15s">⚙️ 个性化设置</button>
+</div>
+</div>
+<!-- 二次元壁纸获取页面-完成后冷却版 -->
+<div id="anime" class="page">
+<div class="card">
+<h2>🎨 二次元壁纸获取</h2>
+<p class="tip" style="animation-delay:0.5s">👉 支持竖屏/横屏/随机方向获取，图片加载完成后5秒可再次请求</p>
+<p class="long-press-tip" style="animation-delay:0.52s">👉 长按图片可使用浏览器自带菜单手动保存到设备</p>
+<div id="anime_tips" class="spider-tips" style="animation-delay:0.55s"></div>
+<!-- 方向选择按钮 -->
+<div class="direction-group" style="animation-delay:0.6s">
+<button id="animeVerticalBtn" class="btn" data-origin-text="📱 获取竖屏">📱 获取竖屏</button>
+<button id="animeHorizontalBtn" class="btn" data-origin-text="🖥️ 获取横屏">🖥️ 获取横屏</button>
+<button id="animeRandomBtn" class="btn" data-origin-text="🎲 随机获取">🎲 随机获取</button>
+</div>
+<!-- 图片预览容器 -->
+<div class="anime-preview-box" id="animePreview" style="animation-delay:0.7s">
+<span class="anime-placeholder" id="animePlaceholder">点击上方按钮获取二次元壁纸</span>
+<img id="animeImg" class="anime-preview-img" alt="二次元壁纸预览">
+</div>
+<!-- 图片信息输出 -->
+<div class="output" id="animeInfo" style="animation-delay:0.8s">壁纸信息将显示在这里</div>
+<!-- 返回按钮 -->
+<button class="btn back" onclick="go('main')" style="animation-delay:0.9s">← 返回主菜单</button>
+</div>
+</div>
+<!-- 公告生成工具页面 完全保留 -->
+<div id="noticeTool" class="page">
+<div class="card">
+<h2>📝 公告生成工具</h2>
+<p class="tip" style="animation-delay:0.5s">👉 输入公告时间和内容，一键生成标准格式公告代码</p>
+<p class="warn-tip" style="animation-delay:0.52s">⚠️ 生成的代码格式和更新日志解析规则完全匹配</p>
+<div id="noticeTips" class="spider-tips" style="animation-delay:0.55s"></div>
+<div class="tip" style="animation-delay:0.55s">📅 公告时间（格式示例：2026 4.28 0:54）</div>
+<input type="text" id="noticeTime" placeholder="请输入公告时间" style="animation-delay:0.6s">
+<div class="tip" style="animation-delay:0.62s">📄 公告详情（支持换行，示例：1.更新了爬取网页视频）</div>
+<textarea id="noticeContent" rows="4" placeholder="请输入公告详情" style="animation-delay:0.65s"></textarea>
+<button class="btn" onclick="generateNoticeCode()" style="animation-delay:0.7s;background:#2D5BFF;">🔨 生成公告源代码</button>
+<button class="btn" onclick="copyNoticeCode()" style="animation-delay:0.75s;background:#00B42A;">📋 复制公告源代码</button>
+<button class="btn" onclick="backupNoticeSource()" style="animation-delay:0.8s;background:#d97706;">💾 备份公告源代码</button>
+<div class="tip" style="animation-delay:0.82s">👇 生成的公告源代码预览</div>
+<div class="output" id="noticeCodePreview" style="animation-delay:0.85s">请点击「生成公告源代码」按钮，生成后将显示在这里</div>
+<div class="card" style="margin:20px 0;padding:20px;animation-delay:0.9s">
+<h2 style="font-size:16px;">📖 代码粘贴位置说明</h2>
+<p class="tip">1. <strong>本地兜底公告替换</strong>：复制生成的代码，找到JS里的 <code>LOCAL_NOTICE_TXT</code> 变量，粘贴到引号内即可</p>
+<p class="tip">2. <strong>多公告追加</strong>：多条公告直接换行追加即可，无需修改原有格式</p>
+<p class="warn-tip">⚠️ 请勿修改生成的代码格式，否则会导致更新日志解析失败</p>
+</div>
+<button class="btn back" onclick="go('main')" style="animation-delay:0.95s">← 返回主菜单</button>
+</div>
+</div>
+<!-- 多平台视频解析下载 完全保留 -->
+<div id="video" class="page">
+<div class="card">
+<h2>🎬 多平台视频解析下载</h2>
+<p class="tip">支持：抖音/快手/B站/小红书/TikTok/皮皮搞笑，粘贴链接即可解析</p>
+<p class="warn-tip">⚠️ 主备双API自动切换，自动剔除中文/空格/冗余文本</p>
+<input type="text" id="video_url" placeholder="粘贴视频分享链接(可带中文描述)" style="animation-delay:0.5s">
+<button class="btn" id="video_parse" style="animation-delay:0.6s;background:#2D5BFF;">🚀 解析视频</button>
+<button class="btn" id="video_down" style="animation-delay:0.7s;background:#00B42A;">📦 打包ZIP下载</button>
+<div id="video_tips" class="spider-tips"></div>
+<div class="output" id="video_info" style="animation-delay:0.8s">解析后显示视频完整信息...</div>
+<div class="img-preview" id="video_player_box" style="animation-delay:0.9s">
+<span>解析后可在线播放</span>
+</div>
+<button class="btn back" onclick="go('main')" style="animation-delay:1.0s">← 返回主菜单</button>
+</div>
+</div>
+<!-- 网页源码爬取 完全保留 -->
+<div id="spider" class="page">
+<div class="card">
+<h2>🌐 网页源码爬取</h2>
+<p class="tip">输入网页链接，一键获取源码、多代理兼容、自动跨域</p>
+<p class="warn-tip">⚠️ 自动剔除中文/空格/冗余文本，粘贴带描述的链接自动清理</p>
+<input type="text" id="spider_url" placeholder="粘贴网页链接(可带中文描述)" style="animation-delay:0.5s">
+<button class="btn" id="spider_get" style="animation-delay:0.6s;background:#2D5BFF;">🚀 获取网页源码</button>
+<button class="btn" id="spider_save" style="animation-delay:0.7s;background:#00B42A;">💾 保存为TXT文件</button>
+<button class="btn" id="spider_save_html" style="animation-delay:0.75s;background:#00B49A;">💾 保存为HTML文件</button>
+<div id="spider_tips" class="spider-tips"></div>
+<div id="spider_stats" class="spider-stats" style="display:none;"></div>
+<div class="output" id="spider_out" style="animation-delay:0.9s">网页源码将显示在这里</div>
+<button class="btn back" onclick="go('main')" style="animation-delay:1.0s">← 返回主菜单</button>
+</div>
+</div>
+<!-- 小番茄图片混淆 界面完全保留 仅修复底层算法 -->
+<div id="imgmix" class="page">
+<div class="card">
+<h2>🖼️ 小番茄原版图片混淆</h2>
+<p class="tip">✅ 基于空间填充Gilbert曲线算法｜压缩不失效</p>
+<p class="warn-tip">⚠️ 流程：选择图片 → 混淆 → 解混淆 → 还原原图</p>
+<p class="tip long-press-tip">👉 长按图片，使用浏览器自带菜单手动保存图片</p>
+<input type="file" id="ipt" accept="image/*" style="display:none;">
+<label for="ipt" class="btn" style="animation-delay:0.5s; background:#180161;">📁 选择图片</label>
+<div id="img_tips" class="spider-tips"></div>
+<div class="img-preview" id="preview_box"><span>选择图片后预览</span></div>
+<button class="btn" id="enc" style="animation-delay:0.7s; background:#4f1787;">🔀 混淆</button>
+<button class="btn" id="dec" style="animation-delay:0.75s; background:#eb3678;">🔁 解混淆</button>
+<button class="btn" id="re" style="animation-delay:0.8s; background:#fb773c;">🔄 还原原图</button>
+<button class="btn back" onclick="go('main')" style="animation-delay:0.9s">← 返回主菜单</button>
+</div>
+</div>
+<!-- 随机一言 完全保留 -->
+<div id="yiyan" class="page">
+<div class="card">
+<h2>✨ 随机一言</h2>
+<div id="yiyan_tips" class="spider-tips"></div>
+<div class="output" id="yitext">点击获取...</div>
+<button class="btn" onclick="getYi()" style="animation-delay:0.7s">刷新一言</button>
+<button class="btn" onclick="copyText('yitext')" style="animation-delay:0.75s">📋 复制一言</button>
+<button class="btn back" onclick="go('main')" style="animation-delay:0.8s">← 返回</button>
+</div>
+</div>
+<!-- 文本加密/解密 完全保留 -->
+<div id="text" class="page">
+<div class="card">
+<h2>🔐 文本加密/解密（1字扩18字符）</h2>
+<div id="text_tips" class="spider-tips"></div>
+<textarea id="text_input" rows="3" placeholder="输入内容"></textarea>
+<button class="btn" onclick="do_enc()" style="animation-delay:0.7s">🔒 超长加密</button>
+<button class="btn" onclick="pasteText()" style="animation-delay:0.72s">📋 粘贴到输入框</button>
+<button class="btn" onclick="do_dec()" style="animation-delay:0.8s">🔓 解密还原</button>
+<button class="btn" onclick="copyText('text_out')" style="animation-delay:0.85s">📋 复制结果</button>
+<div class="output" id="text_out"></div>
+<button class="btn back" onclick="go('main')" style="animation-delay:0.9s">← 返回</button>
+</div>
+</div>
+<!-- 文件加密/解密 完全保留 -->
+<div id="file" class="page">
+<div class="card">
+<h2>📄 文件加密/解密（1字节转5字符）</h2>
+<p class="tip">⚠️ 注意：加密后文件大小约为原文件的5倍</p>
+<p class="tip">加密后文件名格式：原文件名(加密).原扩展名</p>
+<div id="file_tips" class="spider-tips"></div>
+<input type="file" id="file_input" multiple>
+<button class="btn" onclick="file_enc()" style="animation-delay:0.7s">🔒 加密文件（转为5字符编码）</button>
+<button class="btn" onclick="file_dec()" style="animation-delay:0.8s">🔓 解密文件（还原原始内容）</button>
+<button class="btn back" onclick="go('main')" style="animation-delay:0.9s">← 返回主菜单</button>
+</div>
+</div>
+<!-- 设备信息 完全保留 -->
+<div id="device" class="page">
+<div class="card">
+<h2>📱 设备信息</h2>
+<div id="device_tips" class="spider-tips"></div>
+<div class="output" id="devinfo"></div>
+<button class="btn" onclick="show_device()" style="animation-delay:0.7s">刷新</button>
+<button class="btn" onclick="copyText('devinfo')" style="animation-delay:0.75s">📋 复制设备信息</button>
+<button class="btn back" onclick="go('main')" style="animation-delay:0.8s">← 返回</button>
+</div>
+</div>
+<!-- QQ加群 完全保留 -->
+<div id="qq" class="page">
+<div class="card">
+<h2>👥 QQ一键加群</h2>
+<div id="qq_tips" class="spider-tips"></div>
+<div class="output show" id="qq_out">
+【大群】QQ号：1077689022
+🔐 加群验证答案：云舒轩崽爱吃糖
+请复制答案后提交申请！
+【小群】QQ号：931374428
+✅ 无需验证，直接加入
+⚠️ 若群聊提示被封禁或已解散，请添加管理员QQ：
+① 342004241
+② 551422014
+</div>
+<button class="btn" onclick="window.open('mqqapi://card/show_pslcard?src_type=internal&version=1&uin=1077689022&card_type=group&source=qrcode')" style="animation-delay:0.7s">➕ 加入大群（需验证）</button>
+<button class="btn" onclick="copyAns()" style="animation-delay:0.75s">📋 复制答案</button>
+<button class="btn" onclick="window.open('mqqapi://card/show_pslcard?src_type=internal&version=1&uin=931374428&card_type=group&source=qrcode')" style="animation-delay:0.8s">➕ 加入小群（免验证）</button>
+<button class="btn back" onclick="go('main')" style="animation-delay:0.9s">← 返回主菜单</button>
+</div>
+</div>
+<!-- 随机数 完全保留 -->
+<div id="random" class="page">
+<div class="card">
+<h2>🎲 随机数生成器</h2>
+<div id="random_tips" class="spider-tips"></div>
+<div class="tip">👉 最小值：随机数从几开始</div>
+<input type="number" id="nmin" value="1" placeholder="请输入最小值">
+<div class="tip">👉 最大值：随机数到几结束</div>
+<input type="number" id="nmax" value="100" placeholder="请输入最大值">
+<div class="tip">👉 生成个数：要生成多少个数字</div>
+<input type="number" id="ncount" value="10" placeholder="请输入生成个数">
+<button class="btn" onclick="make_rand()" style="animation-delay:0.8s">🎯 立即生成随机数</button>
+<button class="btn" onclick="copyText('rand_out')" style="animation-delay:0.85s">📋 复制随机数</button>
+<div class="output" id="rand_out"></div>
+<button class="btn back" onclick="go('main')" style="animation-delay:1.0s">← 返回主菜单</button>
+</div>
+</div>
+<!-- 更新日志 完全保留 -->
+<div id="log" class="page">
+<div class="card">
+<h2>📋 更新日志</h2>
+<div id="log_tips" class="spider-tips"></div>
+<select id="logSelect" style="width:100%;padding:12px;border-radius:10px;background:#121a29;color:#c7dfff;border:1px solid rgba(255,255,255,.1);font-size:14px;margin-bottom:10px;opacity:0;animation:fadeIn 0.5s 0.6s ease forwards;" disabled>
+<option value="">正在加载更新日志...</option>
+</select>
+<div class="output show" id="log_out">请等待更新日志加载完成</div>
+<button class="btn" onclick="backupNotice()" style="animation-delay:0.7s;background:#28a745;">💾 备份公告源码</button>
+<button class="btn back" onclick="go('main')" style="animation-delay:0.8s">← 返回</button>
+</div>
+</div>
+<!-- 个性化设置 完全保留 -->
+<div id="setting" class="page">
+<div class="card">
+<h2>⚙️ 个性化设置</h2>
+<div class="set-row"><label>背景颜色</label><input type="color" id="bg_color" value="#0b0f1a"></div>
+<div class="set-row"><label>全局字体大小</label><input type="range" min="10" max="20" value="14" id="font_size"></div>
+<div class="set-row"><label>卡片圆角</label><input type="range" min="10" max="40" value="18" id="card_radius"></div>
+<div class="set-row"><label>卡片透明度</label><input type="range" min="0.5" max="1" step="0.01" value="0.95" id="card_op"></div>
+<div class="set-row"><label>按钮圆角</label><input type="range" min="6" max="30" value="12" id="btn_radius"></div>
+<hr class="sep">
+<div class="set-row"><label>按钮左色</label><input type="color" id="btn_c1" value="#1b2538"></div>
+<div class="set-row"><label>按钮右色</label><input type="color" id="btn_c2" value="#1e2a42"></div>
+<div class="set-row"><label>按钮hover色</label><input type="color" id="btn_h" value="#24314d"></div>
+<div class="set-row"><label>按钮文字色</label><input type="color" id="btn_text" value="#e0ecff"></div>
+<div class="set-row"><label>按钮动画时长</label><input type="range" min="0.3" max="2" step="0.05" value="0.5" id="btn_time"></div>
+<hr class="sep">
+<div class="set-row"><label>输出框背景</label><input type="color" id="out_bg" value="#0f1624"></div>
+<div class="set-row"><label>输出文字色</label><input type="color" id="out_text" value="#c7dfff"></div>
+<div class="set-row"><label>输出框圆角</label><input type="range" min="6" max="30" value="12" id="out_radius"></div>
+<div class="set-row"><label>输出动画时长</label><input type="range" min="0.3" max="2" step="0.1" value="0.5" id="out_time"></div>
+<hr class="sep">
+<div class="set-row"><label>输入框背景</label><input type="color" id="in_bg" value="#121a29"></div>
+<div class="set-row"><label>输入文字色</label><input type="color" id="in_text" value="#e0ecff"></div>
+<div class="set-row"><label>输入框圆角</label><input type="range" min="6" max="30" value="10" id="in_radius"></div>
+<hr class="sep">
+<div class="set-row"><label>LOGO圆角</label><input type="range" min="10" max="40" value="20" id="logo_r"></div>
+<div class="set-row"><label>LOGO左色</label><input type="color" id="logo_c1" value="#121a29"></div>
+<div class="set-row"><label>LOGO右色</label><input type="color" id="logo_c2" value="#1a2337"></div>
+<div class="set-row"><label>LOGO文字色</label><input type="color" id="logo_text" value="#a0bff9"></div>
+<button class="btn back" onclick="go('main')" style="margin-top:20px">← 返回主菜单</button>
+</div>
+</div>
+<div class="contributor">
+📌 开发者名单：
+1. (主)糖霜(342004241)：提供了界面UI设计
+2. (副)长夜路漫漫(551422014)：提供了网页直链接
+3. (副)yoki(3916038020)：提供了代码支持
+</div>
+<div class="copyright">聚合工具箱 © 2026 高级网页版</div>
+</div>
+
+<script>
+// 公告内容
+const LOCAL_NOTICE_TXT = `
+{ Time:2026 5.6  19:27, 公告详情: 1.修改了二次元壁纸，获取的间隔时长，从原来的五秒变成了两秒，这样做的原因主要是防止调用api太快，导致API封杀《其实我也不知道是什么原因，只是改一下而已》};
+{ Time:2026 5.5 13:35, 公告详情: 1.这并不是最后一次更新，只是一次异常的修复
+2.又修复了一次图片混淆，为什么要说又？我也不知道，因为这个已经修了好多次了
+3.本工具箱明面上来说，功能是完结了，但是还是会修的，比如说API接口};
+{ Time:2026 5.2 18:13, 公告详情: 太好了，工具箱完结了
+居然来得很仓促，只有短短的一个月
+但是这也十分的遗憾
+可能还有很多没有做成的功能
+可能还有许多没有实现的理想
+期待下一款工具吧
+ps:都开源了，还有人花钱买吗？};
+{ Time:2026 4.30 1.22, 公告详情: 1.更新了网页图片获取
+2.优化的更多，但是主要还是集中优化了网页图片，优化了很多次，但是只放出了这个成品
+3.都是免费的了,还那还说啥了？
+4.冷知识，这个网页爬取可以爬取本工具箱的所有源代码，也算是另一种意义的开源了};
+{ Time:2026 4.29 22:08, 公告详情: 1.更新了公告弹窗
+2.我好像优化了点什么，但是忘了};
+{ Time:2026 4.28 2:28, 公告详情: 1.优化了很多内容};
+{ Time:2026 4.28 1:40, 公告详情: 1.更新了公告生成工具};
+{ Time:2026 4.28 0:56, 公告详情: 1.修复了爬取网页视频};
+{ Time:2026 4.28 0:54, 公告详情: 1.更新了爬取网页视频};
+`;
+// 公告弹窗函数
+function showLatestNotice() {
+  if (!noticeList || noticeList.length === 0) return;
+  const latestNotice = noticeList[0];
+  const originalOverflow = document.body.style.overflow;
+  document.body.style.overflow = 'hidden';
+  let mask = document.createElement('div');
+  mask.style.cssText = `
+    position:fixed; left:0; top:0; z-index:999999;
+    width:100vw; height:100vh;
+    background:rgba(0,0,0,0.6);
+    opacity:0; transition:all 0.4s ease;
+  `;
+  let modal = document.createElement('div');
+  modal.style.cssText = `
+    position:fixed; left:50%; top:50%; z-index:1000000;
+    transform:translate(-50%,-50%) scale(0.95);
+    background:linear-gradient(135deg,#121a29,#1a2337);
+    color:#e0ecff;
+    width:92%; max-width:calc(100vw - 40px);
+    border-radius:14px; padding:18px;
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:0 8px 30px rgba(0,0,0,0.5);
+    opacity:0; transition:all 0.4s ease;
+  `;
+  let title = document.createElement('h3');
+  title.innerText = `📢 ${latestNotice.timeStr} 最新公告`;
+  title.style.cssText = `
+    font-size:16px; color:#c7dfff;
+    margin-bottom:12px; text-align:center;
+    font-weight:500;
+  `;
+  let content = document.createElement('div');
+  content.innerText = latestNotice.detail;
+  content.style.cssText = `
+    font-size:13px; line-height:1.6;
+    margin-bottom:18px; white-space:pre-wrap;
+    color:#e0e6f1; max-height:50vh;
+    overflow-y:auto;
+    word-wrap:break-word; word-break:break-word;
+  `;
+  let confirmBtn = document.createElement('button');
+  confirmBtn.innerText = '我知道了';
+  confirmBtn.style.cssText = `
+    width:100%; padding:10px 0; border:none;
+    border-radius:10px; cursor:pointer;
+    background:linear-gradient(90deg,#2D5BFF,#2563eb);
+    color:#fff; font-size:14px; font-weight:500;
+    transition:all 0.3s ease;
+  `;
+  confirmBtn.onmouseover = () => {
+    confirmBtn.style.background = 'linear-gradient(90deg,#2563eb,#1d4ed8)';
+  };
+  confirmBtn.onmouseout = () => {
+    confirmBtn.style.background = 'linear-gradient(90deg,#2D5BFF,#2563eb)';
+  };
+  modal.appendChild(title);
+  modal.appendChild(content);
+  modal.appendChild(confirmBtn);
+  document.body.appendChild(mask);
+  document.body.appendChild(modal);
+  setTimeout(() => {
+    mask.style.opacity = '1';
+    modal.style.opacity = '1';
+    modal.style.transform = 'translate(-50%,-50%) scale(1)';
+  }, 100);
+  function closeModal() {
+    mask.style.opacity = '0';
+    modal.style.opacity = '0';
+    modal.style.transform = 'translate(-50%,-50%) scale(0.95)';
+    setTimeout(() => {
+      mask.remove();
+      modal.remove();
+      document.body.style.overflow = originalOverflow;
+    }, 400);
+  }
+  confirmBtn.onclick = closeModal;
+  mask.onclick = closeModal;
+}
+// 二次元壁纸API配置-稳定定向源
+const ANIME_APIS = {
+  vertical: [
+    'https://api.anosu.top/img/?type=vertical',
+    'https://www.dmoe.cc/random.php?type=phone',
+    'https://api.r10086.com/动漫图片API/手机端.php',
+    'https://imgapi.cn/api.php?zd=phone&fl=dongman'
+  ],
+  horizontal: [
+    'https://api.anosu.top/img/?type=horizontal',
+    'https://www.dmoe.cc/random.php?type=pc',
+    'https://api.r10086.com/动漫图片API/PC端.php',
+    'https://imgapi.cn/api.php?zd=pc&fl=dongman'
+  ],
+  random: [
+    'https://api.anosu.top/img/',
+    'https://www.dmoe.cc/random.php',
+    'https://api.r10086.com/动漫图片API/随机.php',
+    'https://imgapi.cn/api.php?fl=dongman'
+  ]
+};
+// ===================== 核心冷却锁逻辑 =====================
+let animeRequestController = null;
+let lastAnimeUrl = '';
+const ANIME_TIMEOUT = 5000;
+const MAX_RETRY = 5;
+const COOL_DOWN_SECONDS = 2; // 冷却时间5秒
+// 冷却锁与定时器管理
+let animeCoolDownLock = false;
+let animeCountdownTimer = null;
+const animeBtns = document.querySelectorAll('#anime .direction-group .btn');
+// 清除倒计时定时器
+function clearAnimeCountdown() {
+  if (animeCountdownTimer) {
+    clearInterval(animeCountdownTimer);
+    animeCountdownTimer = null;
+  }
+}
+// 重置按钮状态
+function resetAnimeBtnState() {
+  animeBtns.forEach(btn => {
+    const originText = btn.getAttribute('data-origin-text');
+    btn.innerText = originText;
+    btn.disabled = false;
+  });
+}
+// 启动5秒冷却倒计时（图片完成后执行）
+function startAnimeCoolDown() {
+  // 先清除之前的定时器
+  clearAnimeCountdown();
+  // 开启冷却锁
+  animeCoolDownLock = true;
+  let remainingSeconds = COOL_DOWN_SECONDS;
+  // 立即更新按钮状态
+  animeBtns.forEach(btn => {
+    const originText = btn.getAttribute('data-origin-text');
+    btn.innerText = `${originText} (${remainingSeconds}s后可点击)`;
+    btn.disabled = true;
+  });
+  // 启动倒计时
+  animeCountdownTimer = setInterval(() => {
+    remainingSeconds--;
+    // 更新按钮文本
+    animeBtns.forEach(btn => {
+      const originText = btn.getAttribute('data-origin-text');
+      btn.innerText = `${originText} (${remainingSeconds}s后可点击)`;
+    });
+    // 倒计时结束
+    if (remainingSeconds <= 0) {
+      clearAnimeCountdown();
+      animeCoolDownLock = false;
+      resetAnimeBtnState();
+    }
+  }, 1000);
+}
+// 页面切换时清除定时器，避免异常
+document.addEventListener('DOMContentLoaded', () => {
+  // 页面切换时清理
+  const originalGo = window.go;
+  window.go = function(id) {
+    // 离开壁纸页面时清理所有定时器和锁
+    if (document.getElementById('anime').classList.contains('active') && id !== 'anime') {
+      clearAnimeCountdown();
+      animeCoolDownLock = false;
+      resetAnimeBtnState();
+      if (animeRequestController) {
+        animeRequestController.abort();
+        animeRequestController = null;
+      }
+    }
+    // 执行原有的页面切换逻辑
+    originalGo(id);
+  };
+});
+// 生成防缓存参数
+function generateAnimeCacheBuster() {
+  return Date.now() + Math.random().toString(36).substring(2, 10);
+}
+// 严格比例校验
+function checkImageRatio(img, targetOrientation) {
+  const width = img.naturalWidth;
+  const height = img.naturalHeight;
+  const ratio = height / width;
+  
+  console.log(`图片比例校验：宽${width} 高${height} 高宽比${ratio.toFixed(2)} 目标方向${targetOrientation}`);
+  
+  if (targetOrientation === 'vertical') {
+    return ratio >= 1.2;
+  } else if (targetOrientation === 'horizontal') {
+    return ratio <= 0.625;
+  }
+  return true;
+}
+// 图片预览适配
+function fitImageToPreview(imgElement) {
+  imgElement.classList.remove('vertical-fit', 'horizontal-fit');
+  const imgWidth = imgElement.naturalWidth;
+  const imgHeight = imgElement.naturalHeight;
+  if (imgHeight > imgWidth) {
+    imgElement.classList.add('vertical-fit');
+  } else {
+    imgElement.classList.add('horizontal-fit');
+  }
+}
+// 核心获取壁纸函数-完成后冷却版
+async function fetchAnimeImage(orientation = 'random') {
+  // 冷却锁判断，冷却中直接返回
+  if (animeCoolDownLock) {
+    showTips("请等待冷却结束后再操作", "warn");
+    return;
+  }
+  const tipsBox = document.getElementById('anime_tips');
+  const previewImg = document.getElementById('animeImg');
+  const placeholder = document.getElementById('animePlaceholder');
+  const infoBox = document.getElementById('animeInfo');
+  // 立即禁用所有按钮，请求过程中不可点击
+  animeBtns.forEach(btn => btn.disabled = true);
+  // 中断上一个请求
+  if (animeRequestController) {
+    animeRequestController.abort();
+    animeRequestController = null;
+  }
+  animeRequestController = new AbortController();
+  // 重置图片状态
+  previewImg.classList.remove('show', 'vertical-fit', 'horizontal-fit');
+  previewImg.src = '';
+  placeholder.classList.remove('hide');
+  // 更新状态
+  const orientationText = orientation === 'vertical' ? '竖屏' : orientation === 'horizontal' ? '横屏' : '随机';
+  tipsBox.innerHTML = `<div class="spider-loading">正在获取${orientationText}二次元壁纸...</div>`;
+  setOutput('animeInfo', '正在加载...');
+  const loadStartTime = Date.now();
+  let requestSuccess = false;
+  try {
+    const apiList = ANIME_APIS[orientation];
+    let currentRetry = 0;
+    let finalImageUrl = '';
+    // 重试循环
+    while (currentRetry < MAX_RETRY) {
+      // 检查请求是否被中断
+      if (animeRequestController.signal.aborted) {
+        throw new Error('请求中断');
+      }
+      currentRetry++;
+      const apiIndex = (currentRetry - 1) % apiList.length;
+      let apiUrl = apiList[apiIndex];
+      const cacheBuster = generateAnimeCacheBuster();
+      apiUrl += (apiUrl.includes('?') ? '&' : '?') + '_t=' + cacheBuster;
+      
+      if (apiUrl === lastAnimeUrl) continue;
+      console.log(`第${currentRetry}次尝试，使用API：${apiUrl}`);
+      try {
+        // 加载图片
+        const loadPromise = new Promise((resolve, reject) => {
+          const abortHandler = () => {
+            previewImg.src = '';
+            reject(new Error('请求中断'));
+          };
+          animeRequestController.signal.addEventListener('abort', abortHandler);
+          previewImg.onload = () => {
+            animeRequestController.signal.removeEventListener('abort', abortHandler);
+            resolve();
+          };
+          previewImg.onerror = (err) => {
+            animeRequestController.signal.removeEventListener('abort', abortHandler);
+            reject(err);
+          };
+          setTimeout(() => {
+            animeRequestController.signal.removeEventListener('abort', abortHandler);
+            reject(new Error('加载超时'));
+          }, ANIME_TIMEOUT);
+          previewImg.src = apiUrl;
+        });
+        await loadPromise;
+        // 比例校验
+        if (!checkImageRatio(previewImg, orientation)) {
+          console.log('图片比例不符合要求，重试');
+          continue;
+        }
+        // 校验通过
+        finalImageUrl = apiUrl;
+        lastAnimeUrl = apiUrl;
+        requestSuccess = true;
+        break;
+      } catch (e) {
+        console.log(`第${currentRetry}次尝试失败：`, e.message);
+        if (e.message === '请求中断') throw e;
+        if (currentRetry >= MAX_RETRY) {
+          throw new Error(`获取失败，已重试${MAX_RETRY}次，请检查网络后重试`);
+        }
+      }
+    }
+    if (!finalImageUrl) throw new Error('未获取到符合比例的壁纸，请重试');
+    // 图片适配
+    fitImageToPreview(previewImg);
+    // 显示图片
+    placeholder.classList.add('hide');
+    previewImg.classList.add('show');
+    // 更新信息
+    const loadTime = Date.now() - loadStartTime;
+    const width = previewImg.naturalWidth;
+    const height = previewImg.naturalHeight;
+    const aspectRatio = width > height ? '横屏' : width < height ? '竖屏' : '方形';
+    
+    tipsBox.innerHTML = `<div class="spider-success">${orientationText}壁纸获取成功！耗时${loadTime}ms，重试${currentRetry-1}次</div>`;
+    setOutput('animeInfo', `图片尺寸：${width}×${height} | 画面比例：${aspectRatio} | 加载耗时：${loadTime}ms`);
+    showTips(`${orientationText}壁纸获取成功`, "success");
+  } catch (error) {
+    if (error.name !== 'AbortError' && error.message !== '请求中断') {
+      tipsBox.innerHTML = `<div class="spider-error">获取失败：${error.message}</div>`;
+      setOutput('animeInfo', '壁纸获取失败，请重试');
+      showTips("壁纸获取失败", "error");
+      // 重置图片状态
+      previewImg.src = '';
+      placeholder.classList.remove('hide');
+    }
+  } finally {
+    // 【核心】无论成功/失败，请求完成后启动5秒冷却
+    startAnimeCoolDown();
+    // 释放控制器
+    animeRequestController = null;
+  }
+}
+// 以下原有JS代码完全保留，一字未改
+function showTips(text, type = "success", duration = 2500) {
+  const tipsBox = document.getElementById('globalTips');
+  tipsBox.className = `global-tips ${type}`;
+  tipsBox.innerText = text;
+  tipsBox.classList.add('show');
+  clearTimeout(window.tipsTimer);
+  window.tipsTimer = setTimeout(() => {
+    tipsBox.classList.remove('show');
+  }, duration);
+}
+function go(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const targetPage = document.getElementById(id);
+  if(targetPage) {
+    targetPage.classList.add('active');
+    window.scrollTo(0, 0);
+  } else {
+    showTips("页面不存在", "error");
+  }
+}
+function extractPureUrl(text) {
+  if (!text || typeof text !== 'string') return "";
+  const urlPattern = /https?:\/\/[^\s\u4e00-\u9fff，。！？；：、,;:!?\"\'\(\)（）【】]+/;
+  const matches = text.match(urlPattern);
+  if (matches) {
+    return matches[0].replace(/[.,;:!?\"\'\)]+$/g, '');
+  }
+  return "";
+}
+function setOutput(elId, text) {
+  const el = document.getElementById(elId);
+  if(!el) return;
+  el.classList.remove('show');
+  setTimeout(() => { 
+    el.innerText = text; 
+    el.classList.add('show'); 
+  }, 50);
+}
+async function copyText(id) {
+  const el = document.getElementById(id);
+  if (!el) {
+    showTips("复制失败：未找到目标元素", "error");
+    return;
+  }
+  const text = el.innerText.trim();
+  if (!text) {
+    showTips("复制失败：内容为空", "error");
+    return;
+  }
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      showTips("复制成功！", "success");
+    } else {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      showTips("复制成功！", "success");
+    }
+  } catch (err) {
+    showTips("复制失败：" + err.message, "error");
+  }
+}
+const EXPAND_LEN = 18;
+const CHAR_POOL = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+let noticeList = [];
+let currentNoticeSource = "";
+let allNoticeSourceList = [];
+function applySetting() {
+  document.body.style.background = document.getElementById('bg_color')?.value || "#0b0f1a";
+  document.body.style.fontSize = (document.getElementById('font_size')?.value || 14) + 'px';
+  
+  document.querySelectorAll('.card').forEach(c => {
+    c.style.borderRadius = (document.getElementById('card_radius')?.value || 18) + 'px';
+    c.style.background = `rgba(20,28,46,${document.getElementById('card_op')?.value || 0.95})`;
+  });
+  
+  document.querySelectorAll('.btn').forEach(b => {
+    b.style.borderRadius = (document.getElementById('btn_radius')?.value || 12) + 'px';
+    b.style.background = `linear-gradient(90deg,${document.getElementById('btn_c1')?.value || "#1b2538"},${document.getElementById('btn_c2')?.value || "#1e2a42"})`;
+    b.style.color = document.getElementById('btn_text')?.value || "#e0ecff";
+  });
+  
+  document.querySelectorAll('.output').forEach(o => {
+    o.style.background = document.getElementById('out_bg')?.value || "#0f1624";
+    o.style.color = document.getElementById('out_text')?.value || "#c7dfff";
+    o.style.borderRadius = (document.getElementById('out_radius')?.value || 12) + 'px';
+  });
+  
+  document.querySelectorAll('textarea,input').forEach(i => {
+    i.style.background = document.getElementById('in_bg')?.value || "#121a29";
+    i.style.color = document.getElementById('in_text')?.value || "#e0ecff";
+    i.style.borderRadius = (document.getElementById('in_radius')?.value || 10) + 'px';
+  });
+  
+  const logo = document.querySelector('.logo');
+  if(logo) {
+    logo.style.borderRadius = (document.getElementById('logo_r')?.value || 20) + 'px';
+    logo.style.background = `linear-gradient(135deg,${document.getElementById('logo_c1')?.value || "#121a29"},${document.getElementById('logo_c2')?.value || "#1a2337"})`;
+    document.querySelector('.logo pre').style.color = document.getElementById('logo_text')?.value || "#a0bff9";
+  }
+}
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('#setting input, #setting select').forEach(i => {
+    i.addEventListener('input', applySetting);
+  });
+  // 二次元壁纸按钮绑定
+  document.getElementById('animeVerticalBtn').onclick = () => fetchAnimeImage('vertical');
+  document.getElementById('animeHorizontalBtn').onclick = () => fetchAnimeImage('horizontal');
+  document.getElementById('animeRandomBtn').onclick = () => fetchAnimeImage('random');
+});
+function generateNoticeCode() {
+  const timeInput = document.getElementById('noticeTime');
+  const contentInput = document.getElementById('noticeContent');
+  const previewBox = document.getElementById('noticeCodePreview');
+  const tipsBox = document.getElementById('noticeTips');
+  const time = timeInput?.value.trim() || "";
+  const content = contentInput?.value.trim() || "";
+  if (!time) {
+    tipsBox.innerHTML = `<div class="spider-error">请输入公告时间！</div>`;
+    return;
+  }
+  if (!content) {
+    tipsBox.innerHTML = `<div class="spider-error">请输入公告详情！</div>`;
+    return;
+  }
+  currentNoticeSource = `{ Time:${time}, 公告详情: ${content}};`;
+  allNoticeSourceList.push(currentNoticeSource);
+  previewBox.innerText = currentNoticeSource;
+  previewBox.classList.add('show');
+  tipsBox.innerHTML = `<div class="spider-success">公告源代码生成成功！</div>`;
+}
+function copyNoticeCode() {
+  const previewBox = document.getElementById('noticeCodePreview');
+  const tipsBox = document.getElementById('noticeTips');
+  const code = previewBox?.innerText.trim() || "";
+  if (!code || code === "请点击「生成公告源代码」按钮，生成后将显示在这里") {
+    tipsBox.innerHTML = `<div class="spider-error">请先生成公告源代码！</div>`;
+    return;
+  }
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(code).then(() => {
+        showTips("公告源代码复制成功！", "success");
+        tipsBox.innerHTML = `<div class="spider-success">公告源代码复制成功！</div>`;
+      });
+    } else {
+      const textarea = document.createElement("textarea");
+      textarea.value = code;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      showTips("公告源代码复制成功！", "success");
+      tipsBox.innerHTML = `<div class="spider-success">公告源代码复制成功！</div>`;
+    }
+  } catch (err) {
+    tipsBox.innerHTML = `<div class="spider-error">复制失败：${err.message}</div>`;
+    showTips("复制失败", "error");
+  }
+}
+function backupNoticeSource() {
+  const tipsBox = document.getElementById('noticeTips');
+  if (allNoticeSourceList.length === 0) {
+    tipsBox.innerHTML = `<div class="spider-error">暂无公告源代码可备份，请先生成公告！</div>`;
+    return;
+  }
+  let backupContent = allNoticeSourceList.join("\n");
+  const blob = new Blob([backupContent], { type: "text/plain;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "公告源代码备份.txt";
+  a.click();
+  URL.revokeObjectURL(a.href);
+  
+  showTips("公告源代码备份成功，已下载到本地！", "success");
+  tipsBox.innerHTML = `<div class="spider-success">公告源代码备份成功！</div>`;
+}
+function getRandomStr(len){
+  let s="";
+  for(let i=0;i<len;i++){
+    s+=CHAR_POOL[Math.floor(Math.random()*CHAR_POOL.length)];
+  }
+  return s;
+}
+function do_enc(){
+  const t=document.getElementById("text_input")?.value.trim() || "";
+  const tipsBox = document.getElementById('text_tips');
+  if(!t){
+    tipsBox.innerHTML = `<div class="spider-error">请输入要加密的内容</div>`;
+    return;
+  }
+  let out="";
+  for(let c of t){
+    let code=c.charCodeAt(0).toString(16).padStart(4,"0");
+    out+=code+getRandomStr(EXPAND_LEN)+"|";
+  }
+  setOutput("text_out",out);
+  tipsBox.innerHTML = `<div class="spider-success">文本加密成功！</div>`;
+}
+function do_dec(){
+  const t=document.getElementById("text_input")?.value.trim() || "";
+  const tipsBox = document.getElementById('text_tips');
+  if(!t){
+    tipsBox.innerHTML = `<div class="spider-error">请输入要解密的内容</div>`;
+    return;
+  }
+  let arr=t.split("|").filter(x=>x);
+  let out="";
+  for(let item of arr){
+    let code=item.substr(0,4);
+    let c=parseInt(code,16);
+    if(c)out+=String.fromCharCode(c);
+  }
+  setOutput("text_out",out);
+  tipsBox.innerHTML = `<div class="spider-success">文本解密成功！</div>`;
+}
+async function pasteText() {
+  const textInput = document.getElementById("text_input");
+  const tipsBox = document.getElementById('text_tips');
+  if (!textInput) {
+    showTips("粘贴失败", "error");
+    return;
+  }
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      let pasteText = await navigator.clipboard.readText();
+      textInput.value = pasteText;
+      textInput.dispatchEvent(new Event("input"));
+      showTips("粘贴成功！", "success");
+      tipsBox.innerHTML = `<div class="spider-success">内容粘贴成功！</div>`;
+    } else {
+      throw new Error("环境不支持");
+    }
+  } catch (err) {
+    tipsBox.innerHTML = `<div class="spider-error">粘贴失败，请手动粘贴</div>`;
+    showTips("粘贴失败，请手动粘贴", "warn");
+  }
+}
+function copyAns() {
+  const text = "云舒轩崽爱吃糖";
+  const tipsBox = document.getElementById('qq_tips');
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(() => {
+        showTips("答案复制成功！", "success");
+        tipsBox.innerHTML = `<div class="spider-success">答案复制成功！</div>`;
+      });
+    } else {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      showTips("答案复制成功！", "success");
+      tipsBox.innerHTML = `<div class="spider-success">答案复制成功！</div>`;
+    }
+  } catch (err) {
+    tipsBox.innerHTML = `<div class="spider-error">复制失败</div>`;
+    showTips("复制失败", "error");
+  }
+}
+let byteToCodeMap = new Array(256);
+let codeToByteMap = {};
+function buildCodeMap() {
+  const seededRandom = (seed) => {
+    let x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+  };
+  for(let i = 0; i < 256; i++) {
+    let code = '';
+    for(let j = 0; j < 5; j++) {
+      const randIndex = Math.floor(seededRandom(i + j + 12345) * CHAR_POOL.length);
+      code += CHAR_POOL[randIndex];
+    }
+    byteToCodeMap[i] = code;
+    codeToByteMap[code] = i;
+  }
+}
+buildCodeMap();
+function file_enc() {
+  const files = document.getElementById("file_input")?.files || [];
+  const tipsBox = document.getElementById('file_tips');
+  if (!files.length) {
+    tipsBox.innerHTML = `<div class="spider-error">请先选择文件</div>`;
+    return;
+  }
+  tipsBox.innerHTML = `<div class="spider-loading">正在加密文件，请稍候...</div>`;
+  for (let f of files) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const buf = new Uint8Array(e.target.result);
+      let encodedStr = '';
+      for (let i = 0; i < buf.length; i++) {
+        encodedStr += byteToCodeMap[buf[i]];
+      }
+      const dotIndex = f.name.lastIndexOf('.');
+      let newName = '';
+      if (dotIndex > 0) {
+        const namePart = f.name.substring(0, dotIndex);
+        const extPart = f.name.substring(dotIndex);
+        newName = `${namePart}(加密)${extPart}`;
+      } else {
+        newName = `${f.name}(加密)`;
+      }
+      const blob = new Blob([encodedStr], { type: "text/plain;charset=utf-8" });
+      const a = document.createElement("a");
+      a.download = newName;
+      a.href = URL.createObjectURL(blob);
+      a.click();
+      URL.revokeObjectURL(a.href);
+      tipsBox.innerHTML = `<div class="spider-success">文件加密完成！</div>`;
+      showTips("文件加密成功", "success");
+    };
+    reader.onerror = () => {
+      tipsBox.innerHTML = `<div class="spider-error">读取文件失败</div>`;
+      showTips("读取文件失败", "error");
+    };
+    reader.readAsArrayBuffer(f);
+  }
+}
+function file_dec() {
+  const files = document.getElementById("file_input")?.files || [];
+  const tipsBox = document.getElementById('file_tips');
+  if (!files.length) {
+    tipsBox.innerHTML = `<div class="spider-error">请先选择文件</div>`;
+    return;
+  }
+  tipsBox.innerHTML = `<div class="spider-loading">正在解密文件，请稍候...</div>`;
+  for (let f of files) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const encodedText = e.target.result;
+      if (encodedText.length % 5 !== 0) {
+        tipsBox.innerHTML = `<div class="spider-error">文件格式错误，无法解密</div>`;
+        return;
+      }
+      const byteCount = encodedText.length / 5;
+      const decodedArray = new Uint8Array(byteCount);
+      for (let i = 0; i < byteCount; i++) {
+        const code = encodedText.substring(i * 5, i * 5 + 5);
+        const byteVal = codeToByteMap[code];
+        if (byteVal === undefined) {
+          tipsBox.innerHTML = `<div class="spider-error">文件包含无法识别的编码，解密失败</div>`;
+          return;
+        }
+        decodedArray[i] = byteVal;
+      }
+      let originalName = f.name.replace('(加密)', '');
+      const blob = new Blob([decodedArray], { type: "application/octet-stream" });
+      const a = document.createElement("a");
+      a.download = originalName;
+      a.href = URL.createObjectURL(blob);
+      a.click();
+      URL.revokeObjectURL(a.href);
+      tipsBox.innerHTML = `<div class="spider-success">文件解密完成！</div>`;
+      showTips("文件解密成功", "success");
+    };
+    reader.onerror = () => {
+      tipsBox.innerHTML = `<div class="spider-error">读取文件失败</div>`;
+      showTips("读取文件失败", "error");
+    };
+    reader.readAsText(f);
+  }
+}
+async function getYi() {
+  const tipsBox = document.getElementById('yiyan_tips');
+  setOutput('yitext', "加载中...");
+  try {
+    const r = await fetch("https://v2.xxapi.cn/api/yiyan?type=hitokoto");
+    const d = await r.json();
+    if (d.code === 200) {
+      setOutput('yitext', d.data);
+      tipsBox.innerHTML = `<div class="spider-success">一言获取成功！</div>`;
+    } else {
+      setOutput('yitext', "获取失败，请重试");
+      tipsBox.innerHTML = `<div class="spider-error">一言获取失败</div>`;
+    }
+  } catch (e) {
+    setOutput('yitext', "网络错误，获取失败");
+    tipsBox.innerHTML = `<div class="spider-error">网络错误，获取失败</div>`;
+  }
+}
+function show_device() {
+  setOutput('devinfo', `系统：${navigator.platform}\n浏览器：${navigator.userAgent}\n语言：${navigator.language}\n分辨率：${screen.width}×${screen.height}`);
+  document.getElementById('device_tips').innerHTML = `<div class="spider-success">设备信息刷新成功！</div>`;
+}
+function make_rand() {
+  const min = parseInt(document.getElementById("nmin")?.value) || 1;
+  const max = parseInt(document.getElementById("nmax")?.value) || 100;
+  const cnt = parseInt(document.getElementById("ncount")?.value) || 10;
+  const tipsBox = document.getElementById('random_tips');
+  if (min > max) {
+    tipsBox.innerHTML = `<div class="spider-error">最小值不能大于最大值</div>`;
+    return;
+  }
+  if (cnt <= 0) {
+    tipsBox.innerHTML = `<div class="spider-error">生成个数必须大于0</div>`;
+    return;
+  }
+  let arr = [];
+  for (let i = 0; i < cnt; i++) arr.push(Math.floor(Math.random() * (max - min + 1)) + min);
+  setOutput('rand_out', arr.join(" "));
+  tipsBox.innerHTML = `<div class="spider-success">随机数生成成功！</div>`;
+}
+const logSelect = document.getElementById('logSelect');
+const logOut = document.getElementById('log_out');
+const logTips = document.getElementById('log_tips');
+function parseNoticeTxt(txtContent) {
+  const noticeList = [];
+  const blockReg = /\{([\s\S]*?)\}/g;
+  let blockMatch;
+  while ((blockMatch = blockReg.exec(txtContent)) !== null) {
+    const blockContent = blockMatch[1].trim();
+    if (!blockContent) continue;
+    const timeMatch = blockContent.match(/Time\s*:\s*([^,]+)/i);
+    const detailMatch = blockContent.match(/公告详情\s*:\s*([\s\S]*)$/i);
+    if (!timeMatch || !detailMatch) continue;
+    const timeStr = timeMatch[1].trim();
+    const detailStr = detailMatch[1].trim().replace(/;$/, '');
+    const timeParts = timeStr.split(/[\s\.]+/);
+    const year = parseInt(timeParts[0]) || new Date().getFullYear();
+    const month = String(parseInt(timeParts[1]) || 1).padStart(2, '0');
+    const day = String(parseInt(timeParts[2]) || 1).padStart(2, '0');
+    const timePart = timeParts[3] || "00:00";
+    const [hour, minute] = timePart.split(':').map(n => String(n).padStart(2, '0'));
+    
+    const standardTime = `${year}-${month}-${day} ${hour}:${minute}`;
+    const timestamp = new Date(standardTime).getTime();
+    noticeList.push({
+      timeStr: timeStr,
+      standardTime: standardTime,
+      timestamp: timestamp,
+      detail: detailStr
+    });
+  }
+  noticeList.sort((a, b) => b.timestamp - a.timestamp);
+  return noticeList;
+}
+function loadLocalNotice() {
+  logTips.innerHTML = `<div class="spider-loading">正在加载更新日志...</div>`;
+  noticeList = parseNoticeTxt(LOCAL_NOTICE_TXT);
+  if (noticeList.length === 0) {
+    logTips.innerHTML = `<div class="spider-error">公告解析失败</div>`;
+    return;
+  }
+  renderNoticeSelect();
+  logTips.innerHTML = `<div class="spider-success">更新日志加载成功</div>`;
+}
+function renderNoticeSelect() {
+  logSelect.innerHTML = `<option value="">请选择更新时间</option>`;
+  noticeList.forEach((item, index) => {
+    const option = document.createElement("option");
+    option.value = index;
+    option.innerText = item.timeStr;
+    logSelect.appendChild(option);
+  });
+  logSelect.disabled = false;
+  if (noticeList.length > 0) {
+    logSelect.value = "0";
+    logOut.innerText = noticeList[0].detail;
+  }
+}
+logSelect?.addEventListener('change', function () {
+  const selectedIndex = this.value;
+  if (selectedIndex === "" || !noticeList[selectedIndex]) {
+    logOut.innerText = "请选择更新时间查看详情";
+    return;
+  }
+  logOut.innerText = noticeList[selectedIndex].detail;
+});
+function backupNotice() {
+  if (noticeList.length === 0) {
+    logTips.innerHTML = `<div class="spider-error">暂无公告可备份</div>`;
+    return;
+  }
+  let backupContent = "";
+  noticeList.forEach(item => {
+    backupContent += `{ Time:${item.timeStr}, 公告详情: ${item.detail}};\n`;
+  });
+  const blob = new Blob([backupContent], { type: "text/plain;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "更新公告源码备份.txt";
+  a.click();
+  URL.revokeObjectURL(a.href);
+  logTips.innerHTML = `<div class="spider-success">公告源码备份成功！</div>`;
+  showTips("公告源码备份成功！", "success");
+}
+let videoDataCache = null;
+async function parseBilibili(videoUrl) {
+    try {
+        const apiUrl = `https://api.bugpk.com/api/bilibili?url=${encodeURIComponent(videoUrl)}`;
+        const headers = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" };
+        const res = await fetch(apiUrl, { headers });
+        const data = await res.json();
+        if (data.code === 200 && data.data) return data.data;
+        throw new Error(data.msg || "B站主接口解析失败");
+    } catch (e) {
+        const apiUrl = `http://qs.java.xrvi.top/shipjx/bilibili.php?url=${encodeURIComponent(videoUrl)}`;
+        const headers = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" };
+        const res = await fetch(apiUrl, { headers });
+        const data = await res.json();
+        if (data.code === 200 && data.data) return data.data;
+        throw new Error("B站主备接口均解析失败");
+    }
+}
+async function parseDouyin(videoUrl) {
+    try {
+        const apiUrl = `https://api.bugpk.com/api/douyin?url=${encodeURIComponent(videoUrl)}`;
+        const headers = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" };
+        const res = await fetch(apiUrl, { headers });
+        const data = await res.json();
+        if (data.code === 200 && data.data) return data.data;
+        throw new Error(data.msg || "抖音主接口解析失败");
+    } catch (e) {
+        const apiUrl = `http://qs.java.xrvi.top/shipjx/douyin.php?url=${encodeURIComponent(videoUrl)}`;
+        const headers = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" };
+        const res = await fetch(apiUrl, { headers });
+        const data = await res.json();
+        if (data.code === 200 && data.data) return data.data;
+        throw new Error("抖音主备接口均解析失败");
+    }
+}
+async function parseKuaishou(videoUrl) {
+    try {
+        const apiUrl = `https://api.bugpk.com/api/ksjx?url=${encodeURIComponent(videoUrl)}`;
+        const headers = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" };
+        const res = await fetch(apiUrl, { headers });
+        const data = await res.json();
+        if (data.code === 200 && data.data) return data.data;
+        throw new Error(data.msg || "快手主接口解析失败");
+    } catch (e) {
+        const apiUrl = `http://qs.java.xrvi.top/shipjx/ksjx.php?url=${encodeURIComponent(videoUrl)}`;
+        const headers = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" };
+        const res = await fetch(apiUrl, { headers });
+        const data = await res.json();
+        if (data.code === 200 && data.data) return data.data;
+        throw new Error("快手主备接口均解析失败");
+    }
+}
+async function parseXiaohongshu(videoUrl) {
+    try {
+        const apiUrl = `https://api.bugpk.com/api/xhsjx?url=${encodeURIComponent(videoUrl)}`;
+        const headers = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" };
+        const res = await fetch(apiUrl, { headers });
+        const data = await res.json();
+        if (data.code === 200 && data.data) return data.data;
+        throw new Error(data.msg || "小红书主接口解析失败");
+    } catch (e) {
+        const apiUrl = `http://qs.java.xrvi.top/shipjx/xhsjx.php?url=${encodeURIComponent(videoUrl)}`;
+        const headers = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" };
+        const res = await fetch(apiUrl, { headers });
+        const data = await res.json();
+        if (data.code === 200 && data.data) return data.data;
+        throw new Error("小红书主备接口均解析失败");
+    }
+}
+async function parseTiktok(videoUrl) {
+    try {
+        const apiUrl = `http://qs.java.xrvi.top/shipjx/tiktok.php?url=${encodeURIComponent(videoUrl)}`;
+        const headers = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" };
+        const res = await fetch(apiUrl, { headers });
+        const data = await res.json();
+        if (data.code === 200 && data.data) return data.data;
+        throw new Error("TikTok解析失败");
+    } catch (e) {
+        throw new Error("TikTok解析失败");
+    }
+}
+async function parsePipigao(videoUrl) {
+    try {
+        const apiUrl = `http://qs.java.xrvi.top/shipjx/pipigao.php?url=${encodeURIComponent(videoUrl)}`;
+        const headers = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" };
+        const res = await fetch(apiUrl, { headers });
+        const data = await res.json();
+        if (data.code === 200 && data.data) return data.data;
+        throw new Error("皮皮搞笑解析失败");
+    } catch (e) {
+        throw new Error("皮皮搞笑解析失败");
+    }
+}
+async function parseVideoInfo(url) {
+    if (url.includes("bilibili.com") || url.includes("b23.tv")) {
+        return await parseBilibili(url);
+    } else if (url.includes("douyin.com") || url.includes("iesdouyin.com")) {
+        return await parseDouyin(url);
+    } else if (url.includes("kuaishou.com") || url.includes("gifshow.com")) {
+        return await parseKuaishou(url);
+    } else if (url.includes("xiaohongshu.com") || url.includes("xhslink.com")) {
+        return await parseXiaohongshu(url);
+    } else if (url.includes("tiktok.com")) {
+        return await parseTiktok(url);
+    } else if (url.includes("pipigao.com")) {
+        return await parsePipigao(url);
+    } else {
+        throw new Error("不支持的平台链接");
+    }
+}
+function decodeBase64ProxyUrl(encodedUrl) {
+    if (!encodedUrl || typeof encodedUrl !== 'string') return encodedUrl;
+    try {
+        if (encodedUrl.includes("base64,")) {
+            const parts = encodedUrl.split("base64,");
+            if (parts.length > 1) {
+                const base64Data = parts[1];
+                const decodedBytes = atob(base64Data);
+                return decodedBytes;
+            }
+        }
+        if (encodedUrl.includes("proxyurl=")) {
+            const startIndex = encodedUrl.indexOf("proxyurl=") + 9;
+            const base64Data = encodedUrl.substring(startIndex);
+            const decodedBytes = atob(base64Data);
+            return decodedBytes;
+        }
+        return encodedUrl;
+    } catch (e) {
+        return encodedUrl;
+    }
+}
+function cleanFileName(name) {
+    if (!name || typeof name !== 'string') return "未知";
+    const illegalChars = ['\\', '/', ':', '*', '?', '"', '<', '>', '|', '\n', '\r', '\t'];
+    illegalChars.forEach(c => name = name.replace(c, ''));
+    return name.trim().substring(0, 100);
+}
+const videoParseBtn = document.getElementById('video_parse');
+const videoDownBtn = document.getElementById('video_down');
+const videoUrlInput = document.getElementById('video_url');
+const videoTips = document.getElementById('video_tips');
+const videoInfoBox = document.getElementById('video_info');
+const videoPlayerBox = document.getElementById('video_player_box');
+videoParseBtn.onclick = async () => {
+    const rawInput = videoUrlInput.value.trim();
+    const url = extractPureUrl(rawInput);
+    
+    if (!url) {
+        videoTips.innerHTML = `<div class="spider-error">请输入有效的视频链接</div>`;
+        return;
+    }
+    videoTips.innerHTML = `<div class="spider-loading">正在解析视频，请稍候...</div>`;
+    setOutput('video_info', '解析中...');
+    videoPlayerBox.innerHTML = `<span>解析后可在线播放</span>`;
+    try {
+        const videoData = await parseVideoInfo(url);
+        videoDataCache = videoData;
+        if (videoData.url) videoData.url = decodeBase64ProxyUrl(videoData.url);
+        const infoText = `平台：${videoData.platform || '未知平台'}\n标题：${videoData.title || '无标题'}\n作者：${videoData.author || '未知作者'}\n视频链接：${videoData.url || '无'}`;
+        setOutput('video_info', infoText);
+        if (videoData.url) {
+            videoPlayerBox.innerHTML = `<video src="${videoData.url}" controls autoplay muted style="max-width:100%;max-height:100%;"></video>`;
+        } else if (videoData.images && videoData.images.length > 0) {
+            videoPlayerBox.innerHTML = `<img src="${videoData.images[0]}" alt="预览图" style="max-width:100%;max-height:100%;">`;
+        }
+        videoTips.innerHTML = `<div class="spider-success">解析成功！</div>`;
+    } catch (e) {
+        videoTips.innerHTML = `<div class="spider-error">解析失败：${e.message}</div>`;
+        setOutput('video_info', '解析失败');
+        videoPlayerBox.innerHTML = `<span>解析失败</span>`;
+    }
+};
+videoDownBtn.onclick = async () => {
+    if (!videoDataCache) {
+        videoTips.innerHTML = `<div class="spider-error">请先解析视频</div>`;
+        return;
+    }
+    videoTips.innerHTML = `<div class="spider-loading">正在打包文件，请稍候...</div>`;
+    try {
+        const zip = new JSZip();
+        const author = cleanFileName(videoDataCache.author || '未知作者');
+        const timestamp = new Date().toISOString().replace(/[-T:\.Z]/g, '').substring(0, 14);
+        const zipFileName = `${author} ${timestamp}`;
+        if (videoDataCache.url) {
+            const videoRes = await fetch(videoDataCache.url, {
+                headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" }
+            });
+            const videoBlob = await videoRes.blob();
+            const videoName = `${cleanFileName(videoDataCache.title || '视频')}.mp4`;
+            zip.file(videoName, videoBlob);
+        }
+        if (videoDataCache.images && videoDataCache.images.length > 0) {
+            const imgFolder = zip.folder("images");
+            for (let i = 0; i < videoDataCache.images.length; i++) {
+                const imgUrl = videoDataCache.images[i];
+                try {
+                    const imgRes = await fetch(imgUrl, { headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" } });
+                    const imgBlob = await imgRes.blob();
+                    imgFolder.file(`image_${(i+1).toString().padStart(3, '0')}.jpg`, imgBlob);
+                } catch (e) {}
+            }
+        }
+        const infoContent = `平台：${videoDataCache.platform || '未知平台'}\n标题：${videoDataCache.title || '无标题'}\n作者：${videoDataCache.author || '未知作者'}\n描述：${videoDataCache.description || videoDataCache.desc || ''}\n视频链接：${videoDataCache.url || ''}\n解析时间：${new Date().toLocaleString()}`;
+        zip.file("视频信息.txt", infoContent);
+        const zipBlob = await zip.generateAsync({ type: "blob" });
+        saveAs(zipBlob, `${zipFileName}.zip`);
+        videoTips.innerHTML = `<div class="spider-success">ZIP打包下载完成！</div>`;
+    } catch (e) {
+        videoTips.innerHTML = `<div class="spider-error">下载失败：${e.message}</div>`;
+    }
+};
+let spider_html = "";
+let spider_url_val = "";
+const spider_get = document.getElementById("spider_get");
+const spider_save = document.getElementById("spider_save");
+const spider_save_html = document.getElementById("spider_save_html");
+const spider_url = document.getElementById("spider_url");
+const spider_out = document.getElementById("spider_out");
+const spider_tips = document.getElementById("spider_tips");
+const spider_stats = document.getElementById("spider_stats");
+function fetchTimeout(url, options, timeout = 15000) {
+    return Promise.race([
+        fetch(url, options),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("请求超时")), timeout))
+    ]);
+}
+async function getPageSource(url) {
+    const proxies = [
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+        `https://corsproxy.io/?${encodeURIComponent(url)}`,
+        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+    ];
+    for (let proxy of proxies) {
+        try {
+            let res = await fetchTimeout(proxy, {}, 12000);
+            if (res.ok) return await res.text();
+        } catch (e) {}
+    }
+    throw new Error("所有代理均失效，无法获取源码");
+}
+function checkUrl(str) {
+    try { new URL(str); return true; } catch { return false; }
+}
+spider_get.onclick = async () => {
+    const rawInput = spider_url.value.trim();
+    const url = extractPureUrl(rawInput);
+    
+    if (!url || !checkUrl(url)) {
+        spider_tips.innerHTML = `<div class="spider-error">请输入有效的网页链接</div>`;
+        return;
+    }
+    spider_url_val = url;
+    spider_tips.innerHTML = `<div class="spider-loading">正在获取网页源码，请稍候...</div>`;
+    spider_stats.style.display = "none";
+    setOutput("spider_out", "加载中...");
+    const start = Date.now();
+    try {
+        spider_html = await getPageSource(url);
+        const useTime = Date.now() - start;
+        const len = spider_html.length;
+        const lines = spider_html.split("\n").length;
+        spider_stats.style.display = "flex";
+        spider_stats.innerHTML = `字符数：${len}｜行数：${lines}｜耗时：${useTime}ms`;
+        spider_tips.innerHTML = `<div class="spider-success">获取成功！</div>`;
+        setOutput("spider_out", len > 6000 ? spider_html.slice(0,6000)+"...(已截断)" : spider_html);
+    } catch (e) {
+        spider_tips.innerHTML = `<div class="spider-error">获取失败：${e.message}</div>`;
+        setOutput("spider_out", "获取失败");
+    }
+};
+spider_save.onclick = () => {
+    if (!spider_html) {
+        spider_tips.innerHTML = `<div class="spider-error">暂无源码可保存</div>`;
+        return;
+    }
+    let host = "web_source";
+    try { host = new URL(spider_url_val).hostname; } catch {}
+    const blob = new Blob([spider_html], { type: "text/plain;charset=utf-8" });
+    const a = document.createElement("a");
+    a.download = `${host}.txt`;
+    a.href = URL.createObjectURL(blob);
+    a.click();
+    URL.revokeObjectURL(a.href);
+    spider_tips.innerHTML = `<div class="spider-success">TXT文件保存成功！</div>`;
+};
+spider_save_html.onclick = () => {
+    if (!spider_html) {
+        spider_tips.innerHTML = `<div class="spider-error">暂无源码可保存</div>`;
+        return;
+    }
+    let host = "web_source";
+    try { host = new URL(spider_url_val).hostname; } catch {}
+    const blob = new Blob([spider_html], { type: "text/html;charset=utf-8" });
+    const a = document.createElement("a");
+    a.download = `${host}.html`;
+    a.href = URL.createObjectURL(blob);
+    a.click();
+    URL.revokeObjectURL(a.href);
+    spider_tips.innerHTML = `<div class="spider-success">HTML文件保存成功！</div>`;
+};
+
+// ===================== 修复后的小番茄图片混淆核心代码 =====================
+function gilbert2d(width, height) {
+    const coordinates = [];
+    if (width >= height) {
+        generate2d(0, 0, width, 0, 0, height, coordinates);
+    } else {
+        generate2d(0, 0, 0, height, width, 0, coordinates);
+    }
+    return coordinates;
+}
+function generate2d(x, y, ax, ay, bx, by, coordinates) {
+    const w = Math.abs(ax + ay);
+    const h = Math.abs(bx + by);
+    const dax = Math.sign(ax), day = Math.sign(ay);
+    const dbx = Math.sign(bx), dby = Math.sign(by);
+    if (h === 1) {
+        for (let i = 0; i < w; i++) {
+            coordinates.push([x, y]);
+            x += dax;
+            y += day;
+        }
+        return;
+    }
+    if (w === 1) {
+        for (let i = 0; i < h; i++) {
+            coordinates.push([x, y]);
+            x += dbx;
+            y += dby;
+        }
+        return;
+    }
+    let ax2 = Math.floor(ax / 2), ay2 = Math.floor(ay / 2);
+    let bx2 = Math.floor(bx / 2), by2 = Math.floor(by / 2);
+    const w2 = Math.abs(ax2 + ay2);
+    const h2 = Math.abs(bx2 + by2);
+    if (2 * w > 3 * h) {
+        if ((w2 % 2) && (w > 2)) {
+            ax2 += dax;
+            ay2 += day;
+        }
+        generate2d(x, y, ax2, ay2, bx, by, coordinates);
+        generate2d(x + ax2, y + ay2, ax - ax2, ay - ay2, bx, by, coordinates);
+    } else {
+        if ((h2 % 2) && (h > 2)) {
+            bx2 += dbx;
+            by2 += dby;
+        }
+        generate2d(x, y, bx2, by2, ax2, ay2, coordinates);
+        generate2d(x + bx2, y + by2, ax, ay, bx - bx2, by - by2, coordinates);
+        generate2d(x + (ax - dax) + (bx2 - dbx), y + (ay - day) + (by2 - dby),
+            -bx2, -by2, -(ax - ax2), -(ay - ay2), coordinates);
+    }
+}
+
+const img_preview = document.getElementById("preview_box");
+let originFile = null;
+const displayImg = new Image();
+
+function setsrc(src){
+    if(window.currentUrl) URL.revokeObjectURL(window.currentUrl);
+    window.currentUrl = src;
+    displayImg.src = src;
+    img_preview.innerHTML = `<img src="${src}" style="max-width:100%;max-height:100%;">`;
+}
+
+function encrypt(img){
+    const cvs = document.createElement("canvas")
+    const width = cvs.width = img.width
+    const height = cvs.height = img.height
+    const ctx = cvs.getContext("2d")
+    ctx.drawImage(img, 0, 0)
+    const imgdata = ctx.getImageData(0, 0, width, height)
+    const imgdata2 = new ImageData(width, height)
+    const curve = gilbert2d(width, height)
+    const offset = Math.round((Math.sqrt(5) - 1) / 2 * width * height)
+    for(let i = 0; i < width * height; i++){
+        const old_pos = curve[i]
+        const new_pos = curve[(i + offset) % (width * height)]
+        const old_p = 4 * (old_pos[0] + old_pos[1] * width)
+        const new_p = 4 * (new_pos[0] + new_pos[1] * width)
+        imgdata2.data.set(imgdata.data.slice(old_p, old_p + 4), new_p)
+    }
+    ctx.putImageData(imgdata2, 0, 0)
+    cvs.toBlob(b => { setsrc(URL.createObjectURL(b)) }, "image/jpeg", 0.95)
+}
+
+function decrypt(img){
+    const cvs = document.createElement("canvas")
+    const width = cvs.width = img.width
+    const height = cvs.height = img.height
+    const ctx = cvs.getContext("2d")
+    ctx.drawImage(img, 0, 0)
+    const imgdata = ctx.getImageData(0, 0, width, height)
+    const imgdata2 = new ImageData(width, height)
+    const curve = gilbert2d(width, height)
+    const offset = Math.round((Math.sqrt(5) - 1) / 2 * width * height)
+    for(let i = 0; i < width * height; i++){
+        const old_pos = curve[i]
+        const new_pos = curve[(i + offset) % (width * height)]
+        const old_p = 4 * (old_pos[0] + old_pos[1] * width)
+        const new_p = 4 * (new_pos[0] + new_pos[1] * width)
+        imgdata2.data.set(imgdata.data.slice(new_p, new_p + 4), old_p)
+    }
+    ctx.putImageData(imgdata2, 0, 0)
+    cvs.toBlob(b => { setsrc(URL.createObjectURL(b)) }, "image/jpeg", 0.95)
+}
+
+const ipt = document.getElementById("ipt");
+const encBtn = document.getElementById("enc");
+const decBtn = document.getElementById("dec");
+const resetBtn = document.getElementById("re");
+const imgTips = document.getElementById("img_tips");
+
+ipt.onchange = () => {
+    if(ipt.files.length > 0){
+        originFile = ipt.files[0];
+        setsrc(URL.createObjectURL(originFile));
+        imgTips.innerHTML = `<div class="spider-success">图片加载成功！</div>`;
+    }
+}
+encBtn.onclick = () => { 
+    if(displayImg.src) {
+        img_preview.innerHTML = "处理中...";
+        imgTips.innerHTML = `<div class="spider-loading">正在混淆图片...</div>`;
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                encrypt(displayImg)
+                imgTips.innerHTML = `<div class="spider-success">图片混淆完成！</div>`;
+            })
+        })
+    } else {
+        imgTips.innerHTML = `<div class="spider-error">请先选择图片</div>`;
+    }
+}
+decBtn.onclick = () => { 
+    if(displayImg.src) {
+        img_preview.innerHTML = "处理中...";
+        imgTips.innerHTML = `<div class="spider-loading">正在还原图片...</div>`;
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                decrypt(displayImg)
+                imgTips.innerHTML = `<div class="spider-success">图片解混淆完成！</div>`;
+            })
+        })
+    } else {
+        imgTips.innerHTML = `<div class="spider-error">请先选择图片</div>`;
+    }
+}
+resetBtn.onclick = () => { 
+    if(originFile) {
+        setsrc(URL.createObjectURL(originFile));
+        imgTips.innerHTML = `<div class="spider-success">图片已重置</div>`;
+    } else {
+        imgTips.innerHTML = `<div class="spider-error">请先选择图片</div>`;
+    }
+}
+// ===================== 图片混淆代码结束 =====================
+
+document.addEventListener('DOMContentLoaded', () => {
+    applySetting();
+    loadLocalNotice();
+    show_device();
+    const textarea = document.getElementById('text_input');
+    if (textarea) {
+        textarea.addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+    }
+    showLatestNotice();
+});
+</script>
+</body>
+</html>
